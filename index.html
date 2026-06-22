@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>系统设置合并原型 · 角色权限 & 企微告警</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root{
+    --blue:#3b5bdb; --blue-deep:#2f49b8; --blue-soft:#eef1fd;
+    --ink:#1f2329; --ink-2:#4a5160; --ink-3:#8a909e;
+    --line:#eef0f3; --line-2:#e3e6eb;
+    --bg:#f5f6f8; --green:#2f9e44; --green-soft:#e9f7ee;
+    --amber:#e8a33d; --amber-soft:#fdf3e3; --red:#e03131; --red-soft:#fdecec;
+    --wecom:#2e7d32;
+  }
+  body{ font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; background:var(--bg); color:var(--ink); }
+
+  /* 顶部导航 */
+  .topbar{ height:58px; background:#fff; border-bottom:1px solid var(--line); display:flex; align-items:center; padding:0 28px; gap:10px; }
+  .topbar .logo{ color:var(--blue); font-weight:600; font-size:16px; }
+  .topbar .badge-num{ color:var(--ink-3); font-size:13px; }
+  .topbar .spacer{ flex:1; }
+  .topbar .role-tag{ background:var(--amber-soft); color:var(--amber); font-size:13px; padding:4px 12px; border-radius:6px; }
+  .topbar .avatar{ width:30px; height:30px; border-radius:50%; background:var(--blue); color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; }
+  .topbar .logout{ color:var(--ink-3); font-size:14px; cursor:pointer; }
+
+  /* 侧边栏布局 */
+  .layout{ display:flex; }
+  .side{ width:210px; min-height:calc(100vh - 58px); background:#fff; border-right:1px solid var(--line); padding:22px 0; }
+  .nav-group{ margin-bottom:22px; }
+  .nav-title{ display:flex; align-items:center; gap:9px; padding:0 24px; font-weight:600; font-size:14px; color:var(--ink); margin-bottom:10px; }
+  .nav-title .ic{ width:16px; height:16px; opacity:.55; }
+  .nav-item{ padding:7px 24px 7px 47px; font-size:13.5px; color:var(--ink-3); cursor:pointer; display:inline-block; transition: .2s; }
+  .nav-item:hover{ color:var(--ink-2); }
+  .nav-item.active{ color:var(--blue); font-weight:500; }
+  .nav-row{ display:flex; }
+  .nav-row .nav-item{ flex:1; }
+
+  /* 主体内容区容器 */
+  .main{ flex:1; }
+  .view-panel { padding:24px 30px; }
+
+  /* 页面通用标题 */
+  .page-head{ display:flex; align-items:center; margin-bottom:18px; }
+  .page-head h1{ font-size:21px; font-weight:600; }
+  .page-head .spacer{ flex:1; }
+  .btn-primary{ background:var(--blue); color:#fff; border:none; padding:9px 18px; border-radius:8px; font-size:13.5px; cursor:pointer; font-weight:500; white-space:nowrap; }
+  .btn-primary:hover{ background:var(--blue-deep); }
+  .btn-ghost{ background:#fff; border:1px solid var(--line-2); color:var(--ink-2); padding:9px 16px; border-radius:8px; font-size:13.5px; cursor:pointer; white-space:nowrap; }
+  .btn-ghost:hover{ background:#f7f8fa; }
+
+  /* ================= 视图 1：角色权限样式 ================= */
+  .role-layout{ display:flex; background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; min-height:600px; }
+  .role-list{ width:230px; border-right:1px solid var(--line); padding:16px 0; flex-shrink:0; }
+  .rl-head{ display:flex; align-items:center; padding:0 18px 14px; }
+  .rl-head .t{ font-size:15px; font-weight:600; }
+  .rl-group-title{ display:flex; align-items:center; gap:8px; padding:8px 18px; font-size:13px; color:var(--ink-3); }
+  .role-item{ display:flex; align-items:center; gap:9px; padding:10px 18px; font-size:14px; color:var(--ink-2); cursor:pointer; border-left:2px solid transparent; }
+  .role-item:hover{ background:#f7f8fa; }
+  .role-item.active{ background:var(--blue-soft); color:var(--blue); font-weight:600; border-left-color:var(--blue); }
+  .role-item .ic{ width:16px; height:16px; flex-shrink:0; }
+
+  .role-detail{ flex:1; padding:24px 28px; overflow:hidden; }
+  .rd-head{ display:flex; align-items:flex-start; padding-bottom:18px; border-bottom:1px solid var(--line); margin-bottom:22px; }
+  .rd-head .ava{ width:34px; height:34px; border-radius:8px; background:var(--blue-soft); color:var(--blue); display:flex; align-items:center; justify-content:center; margin-right:12px; flex-shrink:0; }
+  .rd-title{ font-size:17px; font-weight:600; }
+  .rd-desc{ font-size:13px; color:var(--ink-3); margin-top:5px; line-height:1.6; max-width:560px; }
+  .rd-count{ margin-left:auto; display:flex; align-items:center; gap:6px; color:var(--ink-3); font-size:13.5px; white-space:nowrap; }
+
+  .section-title{ display:flex; align-items:center; gap:6px; font-size:15px; font-weight:600; margin-bottom:14px; }
+  .section-title .q{ width:14px; height:14px; color:var(--ink-3); }
+
+  .data-table{ width:100%; border-collapse:collapse; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  .data-table thead th{ text-align:left; font-size:13px; color:var(--ink-2); font-weight:600; padding:13px 18px; background:#f7f8fa; border-bottom:1px solid var(--line); }
+  .data-table tbody td{ padding:16px 18px; border-bottom:1px solid var(--line); font-size:14px; vertical-align:middle; }
+  .data-table tbody tr:last-child td{ border-bottom:none; }
+  .scope-all{ color:var(--ink); }
+  .scope-link{ color:var(--blue); cursor:pointer; display:inline-flex; align-items:center; gap:5px; }
+  .scope-link:hover{ text-decoration:underline; }
+  .scope-tag{ display:inline-block; background:#f0f3ff; color:var(--blue); font-size:12px; padding:2px 9px; border-radius:5px; margin:2px 4px 2px 0; }
+  .mini-note{ font-size:12px; color:var(--ink-3); margin-top:4px; }
+
+  /* 抽屉弹窗 (角色权限) */
+  .drawer-mask{ position:fixed; inset:0; background:rgba(20,24,35,.4); display:none; z-index:50; }
+  .drawer-mask.show{ display:block; }
+  .drawer{ position:fixed; top:0; right:0; width:540px; height:100%; background:#fff; box-shadow:-8px 0 30px rgba(0,0,0,.12); transform:translateX(100%); transition:.25s; display:flex; flex-direction:column; }
+  .drawer-mask.show .drawer{ transform:translateX(0); }
+  .drawer-head{ padding:20px 24px; border-bottom:1px solid var(--line); display:flex; align-items:center; }
+  .drawer-head h3{ font-size:17px; font-weight:600; }
+  .drawer-head .x{ margin-left:auto; font-size:22px; color:var(--ink-3); cursor:pointer; }
+  .drawer-sub{ padding:12px 24px; font-size:12.5px; color:var(--ink-3); background:#f9fafc; border-bottom:1px solid var(--line); line-height:1.6; }
+  .drawer-body{ flex:1; overflow-y:auto; padding:8px 24px; }
+  .member-row{ padding:16px 0; border-bottom:1px solid var(--line); }
+  .member-row:last-child{ border-bottom:none; }
+  .mr-top{ display:flex; align-items:center; gap:11px; margin-bottom:10px; }
+  .mr-ava{ width:34px; height:34px; border-radius:50%; background:var(--blue-soft); color:var(--blue); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:600; }
+  .mr-name{ font-weight:600; font-size:14px; }
+  .mr-sub{ font-size:12px; color:var(--ink-3); margin-top:2px; }
+  .mr-edit{ margin-left:auto; color:var(--blue); font-size:13px; cursor:pointer; }
+  .mr-scope{ padding-left:45px; }
+  .mr-mode{ font-size:13px; color:var(--ink-2); margin-bottom:6px; }
+  .drawer-foot{ padding:16px 24px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:12px; }
+  .btn-cancel{ background:#fff; border:1px solid var(--line-2); color:var(--ink-2); padding:9px 22px; border-radius:8px; font-size:14px; cursor:pointer; }
+
+  /* 居中弹窗 (角色权限) */
+  .pop-mask{ position:fixed; inset:0; background:rgba(20,24,35,.35); display:none; align-items:center; justify-content:center; z-index:60; }
+  .pop-mask.show{ display:flex; }
+  .popover{ width:440px; background:#fff; border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,.2); padding:22px 24px; max-height:80vh; display:flex; flex-direction:column; }
+  .popover h4{ font-size:16px; font-weight:600; margin-bottom:16px; }
+  .radio-row{ display:flex; align-items:center; gap:9px; padding:11px 13px; border:1px solid var(--line-2); border-radius:8px; cursor:pointer; margin-bottom:9px; }
+  .radio-row.sel{ border-color:var(--blue); background:var(--blue-soft); }
+  .radio-dot{ width:16px; height:16px; border-radius:50%; border:1.5px solid var(--line-2); flex-shrink:0; position:relative; }
+  .radio-row.sel .radio-dot{ border-color:var(--blue); }
+  .radio-row.sel .radio-dot::after{ content:''; position:absolute; inset:3px; border-radius:50%; background:var(--blue); }
+  .rr-txt{ font-size:14px; }
+  .rr-sub{ font-size:12px; color:var(--ink-3); }
+  .acc-list{ overflow-y:auto; margin-top:2px; padding-left:25px; }
+  .pop-foot{ display:flex; justify-content:flex-end; gap:10px; margin-top:18px; }
+
+  /* ================= 视图 2：违规提醒样式 ================= */
+  #view-wecom { display:flex; gap:24px; align-items:flex-start; }
+  .col-config{ flex:1; min-width:0; }
+  .col-preview{ width:330px; flex-shrink:0; }
+
+  .master-switch{ display:flex; align-items:center; gap:10px; font-size:13.5px; color:var(--ink-2); }
+  .card{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:22px 24px; margin-bottom:18px; }
+  .card-title{ font-size:15px; font-weight:600; margin-bottom:4px; display:flex; align-items:center; gap:8px; }
+  .card-sub{ font-size:12.5px; color:var(--ink-3); margin-bottom:18px; line-height:1.6; }
+
+  .field{ margin-bottom:18px; }
+  .field:last-child{ margin-bottom:0; }
+  .field label{ display:block; font-size:13.5px; color:var(--ink); margin-bottom:8px; font-weight:500; }
+  .field label .req{ color:var(--red); margin-right:3px; }
+  .input-row{ display:flex; gap:10px; }
+  input[type=text], input[type=number]{ flex:1; padding:9px 12px; border:1px solid var(--line-2); border-radius:8px; font-size:13.5px; outline:none; width:100%; }
+  input:focus{ border-color:var(--blue); }
+  .test-ok{ font-size:12.5px; color:var(--green); display:inline-flex; align-items:center; gap:5px; margin-top:8px; }
+
+  /* 开关 */
+  .switch{ position:relative; width:40px; height:22px; flex-shrink:0; cursor:pointer; display:inline-block; }
+  .switch input{ display:none; }
+  .switch .track{ position:absolute; inset:0; background:#d4d8e0; border-radius:11px; transition:.18s; }
+  .switch .thumb{ position:absolute; top:2.5px; left:2.5px; width:17px; height:17px; background:#fff; border-radius:50%; transition:.18s; box-shadow:0 1px 3px rgba(0,0,0,.2); }
+  .switch input:checked + .track{ background:var(--blue); }
+  .switch input:checked + .track + .thumb{ transform:translateX(18px); }
+
+  /* 事件行 */
+  .event-row{ display:flex; align-items:flex-start; gap:13px; padding:15px; border:1px solid var(--line); border-radius:10px; margin-bottom:11px; }
+  .event-row.on{ border-color:#c5cef5; background:#fafbff; }
+  .event-main{ flex:1; }
+  .event-name{ font-size:14px; font-weight:600; display:flex; align-items:center; gap:9px; }
+  .lv-tag{ font-size:11px; padding:2px 8px; border-radius:5px; font-weight:500; }
+  .lv-high{ background:var(--red-soft); color:var(--red); }
+  .lv-mid{ background:var(--amber-soft); color:#b9770f; }
+  .lv-low{ background:#eef0f3; color:var(--ink-2); }
+  .event-desc{ font-size:12.5px; color:var(--ink-3); margin-top:5px; line-height:1.6; }
+
+  /* 范围选择器 */
+  .seg{ display:inline-flex; background:#f5f6f8; border:1px solid var(--line-2); border-radius:8px; padding:3px; margin-bottom:12px; }
+  .seg-item{ padding:6px 15px; font-size:13px; color:var(--ink-2); border-radius:6px; cursor:pointer; }
+  .seg-item.active{ background:#fff; color:var(--blue); font-weight:500; box-shadow:0 1px 2px rgba(0,0,0,.06); }
+  .acc-pick{ display:none; }
+  .acc-pick.show{ display:block; }
+  .acc-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  
+  /* 通用账号 Item (合并两边的样式) */
+  .acc-item{ display:flex; align-items:center; gap:9px; padding:9px 12px; border:1px solid var(--line); border-radius:8px; cursor:pointer; font-size:13.5px; margin-bottom:7px; }
+  .acc-grid .acc-item { margin-bottom: 0; }
+  .acc-item:hover{ background:#f7f8fa; }
+  .acc-check{ width:16px; height:16px; border:1.5px solid var(--line-2); border-radius:4px; flex-shrink:0; position:relative; }
+  .acc-item.on .acc-check{ background:var(--blue); border-color:var(--blue); }
+  .acc-item.on .acc-check::after{ content:'✓'; color:#fff; font-size:11px; position:absolute; left:2px; top:-2px; }
+  .acc-plat{ margin-left:auto; font-size:11.5px; color:var(--ink-3); }
+
+  /* 频次控制 */
+  .freq-row{ display:flex; align-items:center; gap:10px; font-size:13.5px; color:var(--ink-2); }
+  .freq-row input[type=number]{ width:64px; flex:none; text-align:center; }
+
+  /* 预览卡片 (企微) */
+  .preview-sticky{ position:sticky; top:24px; }
+  .preview-label{ font-size:12.5px; color:var(--ink-3); margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+  .wecom-bg{ background:#f0f2f5; border-radius:14px; padding:18px; }
+  .wecom-card{ background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+  .wc-head{ padding:13px 15px 11px; border-bottom:1px solid #f0f0f0; display:flex; align-items:center; gap:8px; }
+  .wc-bot{ width:26px; height:26px; border-radius:6px; background:var(--wecom); color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; }
+  .wc-bot-name{ font-size:13px; font-weight:600; }
+  .wc-title{ padding:13px 15px 4px; font-size:14.5px; font-weight:600; color:var(--red); display:flex; align-items:center; gap:7px; }
+  .wc-body{ padding:4px 15px 13px; }
+  .wc-line{ display:flex; font-size:12.5px; padding:4px 0; gap:8px; }
+  .wc-key{ color:var(--ink-3); width:62px; flex-shrink:0; }
+  .wc-val{ color:var(--ink); flex:1; }
+  .wc-val.hit{ color:var(--red); }
+  .wc-foot{ border-top:1px solid #f0f0f0; padding:11px 15px; }
+  .wc-link{ color:var(--blue); font-size:13px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; }
+  .preview-switcher{ display:flex; gap:6px; margin-top:14px; }
+  .pv-btn{ flex:1; padding:7px; font-size:12px; text-align:center; border:1px solid var(--line-2); border-radius:7px; cursor:pointer; color:var(--ink-2); background:#fff; }
+  .pv-btn.active{ border-color:var(--blue); color:var(--blue); background:var(--blue-soft); }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="logo">直播智能审核</span>
+    <span class="badge-num">1</span>
+    <span class="spacer"></span>
+    <span class="role-tag">超级管理员</span>
+    <span class="avatar">系</span>
+    <span class="logout">退出</span>
+  </div>
+
+  <div class="layout">
+    <aside class="side">
+      <div class="nav-group">
+        <div class="nav-title"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="3"/><path d="M3 20a6 6 0 0112 0M16 7a3 3 0 010 6M21 20a5 5 0 00-4-5"/></svg>基础数据</div>
+        <span class="nav-item">讲师库</span>
+      </div>
+      <div class="nav-group">
+        <div class="nav-title"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 3v6c0 5-3.5 8-8 11-4.5-3-8-6-8-11V5z"/></svg>规则中心</div>
+        <div class="nav-row"><span class="nav-item">策略列表</span><span class="nav-item">敏感词库</span></div>
+        <div class="nav-row"><span class="nav-item">正则规则</span><span class="nav-item">AI语义模版</span></div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-title"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg>公域直播质检</div>
+        <div class="nav-row"><span class="nav-item">主播帐号</span><span class="nav-item">直播报备</span></div>
+        <span class="nav-item">直播列表</span>
+      </div>
+      <div class="nav-group">
+        <div class="nav-title"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>系统设置</div>
+        <!-- 路由切换按钮 -->
+        <div class="nav-row">
+          <span class="nav-item" id="nav-role" onclick="switchView('role')">角色权限</span>
+        </div>
+        <div class="nav-row">
+          <span class="nav-item" id="nav-wecom" onclick="switchView('wecom')">违规提醒</span>
+          <span class="nav-item">AI模型配置</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      
+      <!-- ================= 视图 1：角色权限 ================= -->
+      <div id="view-role" class="view-panel">
+        <div class="page-head">
+          <h1>角色权限</h1>
+          <span class="spacer"></span>
+        </div>
+
+        <div class="role-layout">
+          <div class="role-list">
+            <div class="rl-head"><span class="t">角色</span><span class="spacer"></span></div>
+            <div class="rl-group-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8a909e" stroke-width="2"><circle cx="9" cy="7" r="3"/><path d="M3 20a6 6 0 0112 0"/></svg>
+              默认角色
+            </div>
+            <div id="roleItems"></div>
+          </div>
+          <div class="role-detail" id="roleDetail"></div>
+        </div>
+      </div>
+
+      <!-- ================= 视图 2：违规提醒 ================= -->
+      <div id="view-wecom" class="view-panel" style="display:none;">
+        <div class="col-config">
+          <div class="page-head">
+            <h1>违规提醒</h1>
+            <span class="spacer"></span>
+            <div class="master-switch">
+              <span id="masterLabel">提醒已开启</span>
+              <label class="switch"><input type="checkbox" id="masterSwitch" checked onchange="onMaster()"><span class="track"></span><span class="thumb"></span></label>
+            </div>
+          </div>
+
+          <!-- 企微机器人 -->
+          <div class="card">
+            <div class="card-title"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--wecom)" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M8 12h.01M16 12h.01M9 16s1 1 3 1 3-1 3-1"/></svg>企业微信群机器人</div>
+            <div class="card-sub">在企业微信群聊中添加「群机器人」，复制其 Webhook 地址粘贴到这里。直播违规时，告警将推送到该群。</div>
+            <div class="field">
+              <label><span class="req">*</span>Webhook 地址</label>
+              <div class="input-row">
+                <input type="text" id="webhook" value="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=••••••••" >
+                <button class="btn-ghost" onclick="testHook()">发送测试</button>
+              </div>
+              <div class="test-ok" id="testOk" style="display:none;">✓ 测试消息已发送，请在企微群中确认收到</div>
+            </div>
+          </div>
+
+          <!-- 告警事件 -->
+          <div class="card">
+            <div class="card-title">触发告警的事件</div>
+            <div class="card-sub">勾选哪些事件需要推送企微告警。不同事件紧急程度不同，卡片样式与是否 @所有人 也不同。</div>
+
+            <div class="event-row on" id="ev1">
+              <label class="switch"><input type="checkbox" checked onchange="toggleEvent('ev1',this)"><span class="track"></span><span class="thumb"></span></label>
+              <div class="event-main">
+                <div class="event-name">直播中·实时质检违规 <span class="lv-tag lv-high">高优先级</span></div>
+                <div class="event-desc">直播正在进行、内容已播出。AI 实时识别到违规时立即推送，卡片标红并 @所有人，便于运营第一时间决策是否处置。</div>
+              </div>
+            </div>
+
+            <div class="event-row on" id="ev2">
+              <label class="switch"><input type="checkbox" checked onchange="toggleEvent('ev2',this)"><span class="track"></span><span class="thumb"></span></label>
+              <div class="event-main">
+                <div class="event-name">报备·AI审核不通过 <span class="lv-tag lv-mid">中优先级</span></div>
+                <div class="event-desc">报备阶段、尚未开播。AI 判定报备材料不通过、转入待人工复核时推送，提醒审核员尽快处理。</div>
+              </div>
+            </div>
+
+            <div class="event-row" id="ev3">
+              <label class="switch"><input type="checkbox" onchange="toggleEvent('ev3',this)"><span class="track"></span><span class="thumb"></span></label>
+              <div class="event-main">
+                <div class="event-name">报备·人工复核驳回 <span class="lv-tag lv-low">普通</span></div>
+                <div class="event-desc">人工复核驳回报备时推送，作为结果通知，提醒提交人修改后重新提交。</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 生效范围 -->
+          <div class="card">
+            <div class="card-title">告警生效的主播账号</div>
+            <div class="card-sub">指定告警对哪些主播账号生效，避免无关账号刷屏。</div>
+            <div class="seg">
+              <span class="seg-item active" id="segAll" onclick="setScope('all')">全部主播账号</span>
+              <span class="seg-item" id="segSpec" onclick="setScope('spec')">指定主播账号</span>
+            </div>
+            <div class="acc-pick" id="accPick">
+              <div class="acc-grid" id="accGrid"></div>
+            </div>
+          </div>
+
+          <!-- 限频 -->
+          <div class="card">
+            <div class="card-title">防刷屏设置</div>
+            <div class="card-sub">同一场直播持续违规时，聚合推送，避免短时间内大量重复告警。</div>
+            <div class="freq-row">
+              同一主播账号，每
+              <input type="number" value="5" min="1">
+              分钟内最多推送 1 条，期间累计违规次数合并显示。
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧：企微卡片预览 -->
+        <div class="col-preview">
+          <div class="preview-sticky">
+            <div class="preview-label">📱 企微告警卡片预览</div>
+            <div class="wecom-bg">
+              <div class="wecom-card" id="wecomCard"></div>
+            </div>
+            <div class="preview-switcher">
+              <div class="pv-btn active" id="pvHigh" onclick="setPreview('high')">实时违规</div>
+              <div class="pv-btn" id="pvMid" onclick="setPreview('mid')">AI不通过</div>
+              <div class="pv-btn" id="pvLow" onclick="setPreview('low')">复核驳回</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </main>
+  </div>
+
+  <!-- ================= 弹窗组件区 ================= -->
+  
+  <!-- 角色权限：配置抽屉 -->
+  <div class="drawer-mask" id="drawerMask">
+    <div class="drawer">
+      <div class="drawer-head">
+        <h3>审核员 · 按成员配置数据范围</h3>
+        <span class="x" onclick="closeDrawer()">×</span>
+      </div>
+      <div class="drawer-sub">审核员的可见数据按成员各自指定。同样是审核员，不同成员可负责不同的主播账号，实现团队分工与数据隔离。</div>
+      <div class="drawer-body" id="drawerBody"></div>
+      <div class="drawer-foot"><button class="btn-cancel" onclick="closeDrawer()">关闭</button></div>
+    </div>
+  </div>
+
+  <!-- 角色权限：账号选择弹框 -->
+  <div class="pop-mask" id="popMask">
+    <div class="popover">
+      <h4 id="popTitle">设置可见主播账号</h4>
+      <div id="popScopeChoice">
+        <div class="radio-row" id="popRowAll" onclick="popSetMode('all')">
+          <span class="radio-dot"></span>
+          <span class="rr-txt"><span class="rr-main">本租户全部账号</span><div class="rr-sub">能看到本租户内所有主播账号的数据</div></span>
+        </div>
+        <div class="radio-row" id="popRowSpec" onclick="popSetMode('spec')">
+          <span class="radio-dot"></span>
+          <span class="rr-txt"><span class="rr-main">指定主播账号</span><div class="rr-sub">只负责选定的账号，按分工隔离</div></span>
+        </div>
+      </div>
+      <div class="acc-list" id="popAccList"></div>
+      <div class="pop-foot">
+        <button class="btn-cancel" onclick="closePop()">取消</button>
+        <button class="btn-primary" onclick="savePop()">保存</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ================= 共享数据 =================
+  const STREAM_ACCOUNTS = [
+    {name:'mosin 小红书', plat:'小红书'},
+    {name:'mosin视频号推送', plat:'视频号'},
+    {name:'抖音号推送', plat:'抖音'},
+    {name:'央视新闻', plat:'抖音'},
+    {name:'每日财经AI电视', plat:'抖音'},
+    {name:'yvon', plat:'抖音'},
+  ];
+
+  // ================= 路由控制逻辑 =================
+  function switchView(viewId) {
+    const isRole = viewId === 'role';
+    // 切换内容显隐
+    document.getElementById('view-role').style.display = isRole ? 'block' : 'none';
+    document.getElementById('view-wecom').style.display = !isRole ? 'flex' : 'none';
+    // 切换侧边栏状态
+    document.getElementById('nav-role').classList.toggle('active', isRole);
+    document.getElementById('nav-wecom').classList.toggle('active', !isRole);
+  }
+
+  // ================= 视图 1：角色权限逻辑 =================
+  const ROLES = [
+    { key:'super', name:'超级管理员', count:1, desc:'商家总管理员，由平台开通。拥有本租户内全部数据权限。',
+      data:[ {mod:'公域直播质检', fn:'直播报备 / 直播列表', scope:'all'}, {mod:'基础数据', fn:'讲师库 / 主播账号', scope:'all'} ] },
+    { key:'review', name:'审核员', count:3, desc:'负责复核直播报备与直播违规。可见数据按成员各自指定的主播账号范围。',
+      data:[ {mod:'公域直播质检', fn:'直播报备 / 直播列表', scope:'by_member'} ] },
+    { key:'submit', name:'提交员', count:5, desc:'负责提交直播报备。默认仅能看到本人提交的报备，可按成员放开为全部。',
+      data:[ {mod:'公域直播质检', fn:'直播报备（提交视角）', scope:'by_member_submit'} ] },
+  ];
+
+  let REVIEW_MEMBERS = [
+    {user:'systemreviewer', sub:'', mode:'spec', accounts:['mosin 小红书','mosin视频号推送','央视新闻']},
+    {user:'reviewer_all', sub:'', mode:'all', accounts:[]},
+    {user:'reviewer_dy', sub:'抖音组', mode:'spec', accounts:['抖音号推送','yvon','每日财经AI电视']},
+  ];
+  let SUBMIT_MEMBERS = [
+    {user:'lead_submit', sub:'报备组主管', mode:'all'},
+    {user:'systemtest', sub:'', mode:'self'},
+  ];
+
+  let curRole = 'super';
+  function selectRole(k){ curRole=k; renderRoleItems(); renderDetail(); }
+
+  function renderRoleItems(){
+    document.getElementById('roleItems').innerHTML = ROLES.map(r=>`
+      <div class="role-item ${curRole===r.key?'active':''}" onclick="selectRole('${r.key}')">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>
+        ${r.name}
+      </div>`).join('');
+  }
+
+  function renderDetail(){
+    const r = ROLES.find(x=>x.key===curRole);
+    const dataRows = r.data.map(d=>{
+      let scopeCell='';
+      if(d.scope==='all'){ scopeCell='<span class="scope-all">全部</span>'; }
+      else if(d.scope==='by_member'){
+        scopeCell=`<span class="scope-link" onclick="openDrawer('review')">按成员配置 · ${REVIEW_MEMBERS.length}人 ›</span>
+          <div class="mini-note">不同审核员可负责不同主播账号</div>`;
+      } else if(d.scope==='by_member_submit'){
+        scopeCell=`<span class="scope-link" onclick="openDrawer('submit')">按成员配置 · ${SUBMIT_MEMBERS.length}人 ›</span>
+          <div class="mini-note">默认仅本人提交，可放开为全部</div>`;
+      }
+      return `<tr><td>${d.mod}</td><td>${d.fn}</td><td>${scopeCell}</td></tr>`;
+    }).join('');
+
+    document.getElementById('roleDetail').innerHTML = `
+      <div class="rd-head">
+        <div class="ava"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg></div>
+        <div><div class="rd-title">${r.name}</div><div class="rd-desc">${r.desc}</div></div>
+        <div class="rd-count">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="3"/><path d="M3 20a6 6 0 0112 0M16 7a3 3 0 010 6M21 20a5 5 0 00-4-5"/></svg>包含 ${r.count} 人
+        </div>
+      </div>
+      <div class="section-title">数据权限 <svg class="q" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div>
+      <table class="data-table">
+        <thead><tr><th style="width:26%">所属模块</th><th style="width:38%">涉及功能</th><th style="width:36%">可见范围</th></tr></thead>
+        <tbody>${dataRows}</tbody>
+      </table>`;
+  }
+
+  let drawerType='review';
+  function openDrawer(type){
+    drawerType=type;
+    document.getElementById('drawerMask').classList.add('show');
+    document.querySelector('.drawer-head h3').textContent = type==='review'?'审核员 · 按成员配置数据范围':'提交员 · 按成员配置数据范围';
+    document.querySelector('.drawer-sub').textContent = type==='review'
+      ? '审核员的可见数据按成员各自指定。同样是审核员，不同成员可负责不同的主播账号，实现团队分工与数据隔离。'
+      : '提交员默认仅能看到本人提交的报备；如为报备组主管，可放开为查看本租户全部提交。';
+    renderDrawer();
+  }
+  function closeDrawer(){ document.getElementById('drawerMask').classList.remove('show'); }
+
+  function renderDrawer(){
+    const body=document.getElementById('drawerBody');
+    if(drawerType==='review'){
+      body.innerHTML = REVIEW_MEMBERS.map((m,i)=>{
+        const scopeHtml = m.mode==='all'
+          ? '<div class="mr-mode">本租户全部账号</div>'
+          : `<div class="mr-mode">指定主播账号 · ${m.accounts.length} 个</div><div>${m.accounts.map(a=>`<span class="scope-tag">${a}</span>`).join('')}</div>`;
+        return `<div class="member-row">
+          <div class="mr-top">
+            <div class="mr-ava">${m.user.slice(0,1).toUpperCase()}</div>
+            <div><div class="mr-name">${m.user}</div>${m.sub?`<div class="mr-sub">${m.sub}</div>`:''}</div>
+            <span class="mr-edit" onclick="openPop('review',${i})">编辑</span>
+          </div>
+          <div class="mr-scope">${scopeHtml}</div>
+        </div>`;
+      }).join('');
+    } else {
+      body.innerHTML = SUBMIT_MEMBERS.map((m,i)=>{
+        const txt = m.mode==='all'?'本租户全部提交':'仅本人提交';
+        return `<div class="member-row">
+          <div class="mr-top">
+            <div class="mr-ava">${m.user.slice(0,1).toUpperCase()}</div>
+            <div><div class="mr-name">${m.user}</div>${m.sub?`<div class="mr-sub">${m.sub}</div>`:''}</div>
+            <span class="mr-edit" onclick="openPop('submit',${i})">编辑</span>
+          </div>
+          <div class="mr-scope"><div class="mr-mode">${txt}</div></div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  let popType='review', popIdx=0, popMode='all', popAccounts=[];
+  function openPop(type,idx){
+    popType=type; popIdx=idx;
+    document.getElementById('popMask').classList.add('show');
+    const rows=document.getElementById('popScopeChoice').children;
+    if(type==='review'){
+      const m=REVIEW_MEMBERS[idx];
+      document.getElementById('popTitle').textContent=`设置可见主播账号 · ${m.user}`;
+      popMode=m.mode; popAccounts=m.accounts.slice();
+      rows[0].querySelector('.rr-main').textContent='本租户全部账号';
+      rows[0].querySelector('.rr-sub').textContent='能看到本租户内所有主播账号的数据';
+      rows[1].querySelector('.rr-main').textContent='指定主播账号';
+      rows[1].querySelector('.rr-sub').textContent='只负责选定的账号，按分工隔离';
+      renderPopChoice('all','spec');
+    } else {
+      const m=SUBMIT_MEMBERS[idx];
+      document.getElementById('popTitle').textContent=`设置可见范围 · ${m.user}`;
+      popMode=m.mode;
+      rows[0].querySelector('.rr-main').textContent='仅本人提交';
+      rows[0].querySelector('.rr-sub').textContent='默认，只能看到自己提交的报备';
+      rows[1].querySelector('.rr-main').textContent='本租户全部提交';
+      rows[1].querySelector('.rr-sub').textContent='适合报备组主管，可见全部提交';
+      renderPopChoice('self','all');
+    }
+  }
+  function renderPopChoice(v0,v1){
+    const all=document.getElementById('popRowAll'), spec=document.getElementById('popRowSpec');
+    all.dataset.val=v0; spec.dataset.val=v1;
+    all.classList.toggle('sel', popMode===v0);
+    spec.classList.toggle('sel', popMode===v1);
+    const list=document.getElementById('popAccList');
+    if(popType==='review' && popMode==='spec'){
+      list.style.display='';
+      list.innerHTML = STREAM_ACCOUNTS.map(a=>`<div class="acc-item ${popAccounts.includes(a.name)?'on':''}" onclick="popToggle('${a.name}')">
+        <span class="acc-check"></span>${a.name}<span class="acc-plat">${a.plat}</span></div>`).join('');
+    } else { list.style.display='none'; list.innerHTML=''; }
+  }
+  function popSetMode(which){
+    if(popType==='review'){ popMode = which==='all'?'all':'spec'; renderPopChoice('all','spec'); }
+    else { popMode = which==='all'?'self':'all'; renderPopChoice('self','all'); }
+  }
+  function popToggle(name){
+    const i=popAccounts.indexOf(name); if(i>=0)popAccounts.splice(i,1); else popAccounts.push(name);
+    renderPopChoice('all','spec');
+  }
+  function savePop(){
+    if(popType==='review'){
+      REVIEW_MEMBERS[popIdx].mode=popMode;
+      REVIEW_MEMBERS[popIdx].accounts = popMode==='spec'?popAccounts.slice():[];
+    } else { SUBMIT_MEMBERS[popIdx].mode=popMode; }
+    closePop(); renderDrawer(); renderDetail();
+  }
+  function closePop(){ document.getElementById('popMask').classList.remove('show'); }
+
+  // ================= 视图 2：违规提醒逻辑 =================
+  let scopeMode='all', pickedAcc=['mosin 小红书','央视新闻'];
+
+  function onMaster(){
+    const on=document.getElementById('masterSwitch').checked;
+    document.getElementById('masterLabel').textContent = on?'提醒已开启':'提醒已关闭';
+  }
+  function testHook(){ document.getElementById('testOk').style.display=''; }
+  function toggleEvent(id,el){ document.getElementById(id).classList.toggle('on', el.checked); }
+
+  function setScope(m){
+    scopeMode=m;
+    document.getElementById('segAll').classList.toggle('active',m==='all');
+    document.getElementById('segSpec').classList.toggle('active',m==='spec');
+    document.getElementById('accPick').classList.toggle('show',m==='spec');
+  }
+  function renderAcc(){
+    document.getElementById('accGrid').innerHTML = STREAM_ACCOUNTS.map(a=>`
+      <div class="acc-item ${pickedAcc.includes(a.name)?'on':''}" onclick="toggleAcc('${a.name}')">
+        <span class="acc-check"></span>${a.name}<span class="acc-plat">${a.plat}</span>
+      </div>`).join('');
+  }
+  function toggleAcc(name){
+    const i=pickedAcc.indexOf(name); if(i>=0)pickedAcc.splice(i,1); else pickedAcc.push(name);
+    renderAcc();
+  }
+
+  const CARDS = {
+    high:{ color:'#e03131', title:'⚠ 直播实时违规告警', at:'@所有人',
+      lines:[ ['主播账号','mosin 小红书'],['平台','小红书'],['出镜讲师','mosin'],
+              ['违规环节','直播中（实时）'],['违规等级','高危'],['违规类型','荐股 / 夸大收益'],
+              ['命中内容','「这只票闭眼买，三个月翻倍」',true],['时间','2026-06-22 14:32'] ],
+      link:'前往复核 · 查看实时直播' },
+    mid:{ color:'#b9770f', title:'AI 审核不通过 · 待人工复核',
+      lines:[ ['主播账号','mosin视频号推送'],['平台','视频号'],['出镜讲师','mosin'],
+              ['违规环节','报备材料（开播前）'],['违规类型','账外引流'],
+              ['命中内容','口播稿第 2 页命中引流话术',true],['时间','2026-06-22 11:08'] ],
+      link:'前往复核 · 查看报备详情' },
+    low:{ color:'#5f5e5a', title:'报备已驳回',
+      lines:[ ['主播账号','抖音号推送'],['平台','抖音'],['提交人','perry'],
+              ['驳回原因','课件含未标注风险提示',true],['时间','2026-06-22 10:51'] ],
+      link:'查看报备 · 通知提交人修改' },
+  };
+  function setPreview(k){
+    document.getElementById('pvHigh').classList.toggle('active',k==='high');
+    document.getElementById('pvMid').classList.toggle('active',k==='mid');
+    document.getElementById('pvLow').classList.toggle('active',k==='low');
+    const c=CARDS[k];
+    document.getElementById('wecomCard').innerHTML = `
+      <div class="wc-head"><div class="wc-bot">微</div><div class="wc-bot-name">直播风控告警机器人</div></div>
+      <div class="wc-title" style="color:${c.color}">${c.title}${c.at?` <span style="font-size:11px;color:#fff;background:${c.color};padding:1px 7px;border-radius:4px;">${c.at}</span>`:''}</div>
+      <div class="wc-body">
+        ${c.lines.map(l=>`<div class="wc-line"><span class="wc-key">${l[0]}</span><span class="wc-val ${l[2]?'hit':''}">${l[1]}</span></div>`).join('')}
+      </div>
+      <div class="wc-foot"><div class="wc-link">${c.link}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></div></div>`;
+  }
+
+  // ================= 初始化 =================
+  renderRoleItems(); 
+  renderDetail();
+  renderAcc(); 
+  setPreview('high');
+  // 默认展示角色权限视图
+  switchView('role');
+</script>
+</body>
+</html>
