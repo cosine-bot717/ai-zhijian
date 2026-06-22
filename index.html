@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>系统设置合并原型 · 角色权限 & 企微告警</title>
+<title>系统设置合并原型</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   :root{
@@ -16,7 +16,7 @@
   }
   body{ font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; background:var(--bg); color:var(--ink); }
 
-  /* 顶部导航 */
+  /* 通用布局与顶栏 */
   .topbar{ height:58px; background:#fff; border-bottom:1px solid var(--line); display:flex; align-items:center; padding:0 28px; gap:10px; }
   .topbar .logo{ color:var(--blue); font-weight:600; font-size:16px; }
   .topbar .badge-num{ color:var(--ink-3); font-size:13px; }
@@ -25,119 +25,148 @@
   .topbar .avatar{ width:30px; height:30px; border-radius:50%; background:var(--blue); color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; }
   .topbar .logout{ color:var(--ink-3); font-size:14px; cursor:pointer; }
 
-  /* 侧边栏布局 */
   .layout{ display:flex; }
   .side{ width:210px; min-height:calc(100vh - 58px); background:#fff; border-right:1px solid var(--line); padding:22px 0; }
   .nav-group{ margin-bottom:22px; }
   .nav-title{ display:flex; align-items:center; gap:9px; padding:0 24px; font-weight:600; font-size:14px; color:var(--ink); margin-bottom:10px; }
   .nav-title .ic{ width:16px; height:16px; opacity:.55; }
-  .nav-item{ padding:7px 24px 7px 47px; font-size:13.5px; color:var(--ink-3); cursor:pointer; display:inline-block; transition: .2s; }
+  .nav-item{ padding:7px 24px 7px 47px; font-size:13.5px; color:var(--ink-3); cursor:pointer; display:inline-block; transition:.15s; }
   .nav-item:hover{ color:var(--ink-2); }
   .nav-item.active{ color:var(--blue); font-weight:500; }
   .nav-row{ display:flex; }
   .nav-row .nav-item{ flex:1; }
 
-  /* 主体内容区容器 */
-  .main{ flex:1; }
-  .view-panel { padding:24px 30px; }
-
-  /* 页面通用标题 */
+  .main{ flex:1; padding:24px 30px; }
+  
+  /* 通用组件 */
   .page-head{ display:flex; align-items:center; margin-bottom:18px; }
   .page-head h1{ font-size:21px; font-weight:600; }
   .page-head .spacer{ flex:1; }
-  .btn-primary{ background:var(--blue); color:#fff; border:none; padding:9px 18px; border-radius:8px; font-size:13.5px; cursor:pointer; font-weight:500; white-space:nowrap; }
+  .btn-primary{ background:var(--blue); color:#fff; border:none; padding:9px 18px; border-radius:8px; font-size:14px; cursor:pointer; font-weight:500; }
   .btn-primary:hover{ background:var(--blue-deep); }
-  .btn-ghost{ background:#fff; border:1px solid var(--line-2); color:var(--ink-2); padding:9px 16px; border-radius:8px; font-size:13.5px; cursor:pointer; white-space:nowrap; }
-  .btn-ghost:hover{ background:#f7f8fa; }
-
-  /* ================= 视图 1：角色权限样式 ================= */
-  .role-layout{ display:flex; background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; min-height:600px; }
-  .role-list{ width:230px; border-right:1px solid var(--line); padding:16px 0; flex-shrink:0; }
-  .rl-head{ display:flex; align-items:center; padding:0 18px 14px; }
-  .rl-head .t{ font-size:15px; font-weight:600; }
-  .rl-group-title{ display:flex; align-items:center; gap:8px; padding:8px 18px; font-size:13px; color:var(--ink-3); }
-  .role-item{ display:flex; align-items:center; gap:9px; padding:10px 18px; font-size:14px; color:var(--ink-2); cursor:pointer; border-left:2px solid transparent; }
-  .role-item:hover{ background:#f7f8fa; }
-  .role-item.active{ background:var(--blue-soft); color:var(--blue); font-weight:600; border-left-color:var(--blue); }
-  .role-item .ic{ width:16px; height:16px; flex-shrink:0; }
-
-  .role-detail{ flex:1; padding:24px 28px; overflow:hidden; }
-  .rd-head{ display:flex; align-items:flex-start; padding-bottom:18px; border-bottom:1px solid var(--line); margin-bottom:22px; }
-  .rd-head .ava{ width:34px; height:34px; border-radius:8px; background:var(--blue-soft); color:var(--blue); display:flex; align-items:center; justify-content:center; margin-right:12px; flex-shrink:0; }
-  .rd-title{ font-size:17px; font-weight:600; }
-  .rd-desc{ font-size:13px; color:var(--ink-3); margin-top:5px; line-height:1.6; max-width:560px; }
-  .rd-count{ margin-left:auto; display:flex; align-items:center; gap:6px; color:var(--ink-3); font-size:13.5px; white-space:nowrap; }
-
-  .section-title{ display:flex; align-items:center; gap:6px; font-size:15px; font-weight:600; margin-bottom:14px; }
-  .section-title .q{ width:14px; height:14px; color:var(--ink-3); }
-
-  .data-table{ width:100%; border-collapse:collapse; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
-  .data-table thead th{ text-align:left; font-size:13px; color:var(--ink-2); font-weight:600; padding:13px 18px; background:#f7f8fa; border-bottom:1px solid var(--line); }
-  .data-table tbody td{ padding:16px 18px; border-bottom:1px solid var(--line); font-size:14px; vertical-align:middle; }
-  .data-table tbody tr:last-child td{ border-bottom:none; }
-  .scope-all{ color:var(--ink); }
-  .scope-link{ color:var(--blue); cursor:pointer; display:inline-flex; align-items:center; gap:5px; }
-  .scope-link:hover{ text-decoration:underline; }
-  .scope-tag{ display:inline-block; background:#f0f3ff; color:var(--blue); font-size:12px; padding:2px 9px; border-radius:5px; margin:2px 4px 2px 0; }
-  .mini-note{ font-size:12px; color:var(--ink-3); margin-top:4px; }
-
-  /* 抽屉弹窗 (角色权限) */
-  .drawer-mask{ position:fixed; inset:0; background:rgba(20,24,35,.4); display:none; z-index:50; }
-  .drawer-mask.show{ display:block; }
-  .drawer{ position:fixed; top:0; right:0; width:540px; height:100%; background:#fff; box-shadow:-8px 0 30px rgba(0,0,0,.12); transform:translateX(100%); transition:.25s; display:flex; flex-direction:column; }
-  .drawer-mask.show .drawer{ transform:translateX(0); }
-  .drawer-head{ padding:20px 24px; border-bottom:1px solid var(--line); display:flex; align-items:center; }
-  .drawer-head h3{ font-size:17px; font-weight:600; }
-  .drawer-head .x{ margin-left:auto; font-size:22px; color:var(--ink-3); cursor:pointer; }
-  .drawer-sub{ padding:12px 24px; font-size:12.5px; color:var(--ink-3); background:#f9fafc; border-bottom:1px solid var(--line); line-height:1.6; }
-  .drawer-body{ flex:1; overflow-y:auto; padding:8px 24px; }
-  .member-row{ padding:16px 0; border-bottom:1px solid var(--line); }
-  .member-row:last-child{ border-bottom:none; }
-  .mr-top{ display:flex; align-items:center; gap:11px; margin-bottom:10px; }
-  .mr-ava{ width:34px; height:34px; border-radius:50%; background:var(--blue-soft); color:var(--blue); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:600; }
-  .mr-name{ font-weight:600; font-size:14px; }
-  .mr-sub{ font-size:12px; color:var(--ink-3); margin-top:2px; }
-  .mr-edit{ margin-left:auto; color:var(--blue); font-size:13px; cursor:pointer; }
-  .mr-scope{ padding-left:45px; }
-  .mr-mode{ font-size:13px; color:var(--ink-2); margin-bottom:6px; }
-  .drawer-foot{ padding:16px 24px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:12px; }
   .btn-cancel{ background:#fff; border:1px solid var(--line-2); color:var(--ink-2); padding:9px 22px; border-radius:8px; font-size:14px; cursor:pointer; }
+  .btn-cancel:hover{ background:#f7f8fa; }
+  .btn-ghost{ background:#fff; border:1px solid var(--line-2); color:var(--ink-2); padding:8px 16px; border-radius:8px; font-size:13.5px; cursor:pointer; }
+  .btn-ghost:hover{ background:#f7f8fa; }
+  .btn-ghost.disabled{ opacity:.4; pointer-events:none; }
 
-  /* 居中弹窗 (角色权限) */
-  .pop-mask{ position:fixed; inset:0; background:rgba(20,24,35,.35); display:none; align-items:center; justify-content:center; z-index:60; }
-  .pop-mask.show{ display:flex; }
-  .popover{ width:440px; background:#fff; border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,.2); padding:22px 24px; max-height:80vh; display:flex; flex-direction:column; }
-  .popover h4{ font-size:16px; font-weight:600; margin-bottom:16px; }
-  .radio-row{ display:flex; align-items:center; gap:9px; padding:11px 13px; border:1px solid var(--line-2); border-radius:8px; cursor:pointer; margin-bottom:9px; }
+  /* ================= 视图 1：账号管理 ================= */
+  .note{ background:#f9fafc; border:1px solid var(--line); border-radius:8px; padding:11px 14px; font-size:12.5px; color:var(--ink-3); margin-bottom:18px; line-height:1.7; }
+  .note b{ color:var(--ink-2); font-weight:600; }
+  .account-card{ background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+  .account-card table{ width:100%; border-collapse:collapse; }
+  .account-card thead th{ text-align:left; font-size:13px; color:var(--ink-3); font-weight:500; padding:16px 22px; background:#fafbfc; border-bottom:1px solid var(--line); }
+  .account-card tbody td{ padding:18px 22px; border-bottom:1px solid var(--line); font-size:14px; vertical-align:middle; }
+  .account-card tbody tr:last-child td{ border-bottom:none; }
+  .uname{ font-weight:600; color:var(--ink); }
+  .usub{ font-size:12.5px; color:var(--ink-3); margin-top:3px; }
+  .role-pill{ font-size:12.5px; padding:3px 10px; border-radius:6px; display:inline-block; }
+  .role-super{ background:var(--blue-soft); color:var(--blue); }
+  .role-review{ background:var(--green-soft); color:var(--green); }
+  .role-submit{ background:#f0f1f4; color:var(--ink-2); }
+  .scope-text{ color:var(--ink-2); font-size:13.5px; }
+  .scope-tags{ display:flex; flex-wrap:wrap; gap:6px; margin-top:5px; }
+  .scope-tag{ background:#f0f3ff; color:var(--blue); font-size:12px; padding:2px 9px; border-radius:5px; }
+  .op a{ color:var(--blue); font-size:14px; cursor:pointer; margin-right:18px; text-decoration:none; }
+  
+  /* 弹窗相关 (账号管理) */
+  .mask{ position:fixed; inset:0; background:rgba(20,24,35,.45); display:none; align-items:center; justify-content:center; z-index:50; }
+  .mask.show{ display:flex; }
+  .modal{ width:480px; max-height:88vh; background:#fff; border-radius:14px; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,.2); }
+  .modal-head{ padding:22px 26px 16px; display:flex; align-items:center; }
+  .modal-head h3{ font-size:18px; font-weight:600; margin-bottom:0; }
+  .modal-head .x{ margin-left:auto; color:var(--ink-3); font-size:22px; cursor:pointer; line-height:1; }
+  .modal-body{ padding:4px 26px 8px; overflow-y:auto; }
+  .field{ margin-bottom:20px; }
+  .field label{ display:block; font-size:14px; color:var(--ink); margin-bottom:8px; font-weight:500; }
+  .field label .req{ color:var(--red); margin-right:3px; }
+  .field input[type=text], .field input[type=password], .field select{ width:100%; padding:10px 12px; border:1px solid var(--line-2); border-radius:8px; font-size:14px; outline:none; background:#fff; }
+  .field input:focus, .field select:focus{ border-color:var(--blue); }
+  .field select{ appearance:none; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%238a909e' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>"); background-repeat:no-repeat; background-position:right 12px center; cursor:pointer; }
+  .field-hint{ font-size:12px; color:var(--ink-3); margin-top:6px; }
+  
+  .scope-block{ background:#f9fafc; border:1px solid var(--line); border-radius:10px; padding:16px; margin-bottom:20px; }
+  .scope-block .sb-head{ display:flex; align-items:center; gap:7px; font-size:13.5px; font-weight:600; color:var(--ink); margin-bottom:4px; }
+  .scope-block .sb-head .dot{ width:6px; height:6px; border-radius:50%; background:var(--blue); }
+  .sb-desc{ font-size:12.5px; color:var(--ink-3); line-height:1.7; margin-bottom:10px; }
+  .radio-row{ display:flex; align-items:center; gap:9px; padding:11px 13px; border:1px solid var(--line-2); border-radius:8px; cursor:pointer; margin-bottom:9px; background:#fff; }
+  .radio-row:hover{ border-color:#c5cef5; }
   .radio-row.sel{ border-color:var(--blue); background:var(--blue-soft); }
   .radio-dot{ width:16px; height:16px; border-radius:50%; border:1.5px solid var(--line-2); flex-shrink:0; position:relative; }
   .radio-row.sel .radio-dot{ border-color:var(--blue); }
   .radio-row.sel .radio-dot::after{ content:''; position:absolute; inset:3px; border-radius:50%; background:var(--blue); }
-  .rr-txt{ font-size:14px; }
+  .rr-txt{ font-size:13.5px; }
   .rr-sub{ font-size:12px; color:var(--ink-3); }
-  .acc-list{ overflow-y:auto; margin-top:2px; padding-left:25px; }
-  .pop-foot{ display:flex; justify-content:flex-end; gap:10px; margin-top:18px; }
+  .modal-foot{ padding:16px 26px 22px; display:flex; justify-content:flex-end; gap:12px; border-top:1px solid var(--line); }
 
-  /* ================= 视图 2：违规提醒样式 ================= */
-  #view-wecom { display:flex; gap:24px; align-items:flex-start; }
+  /* ================= 视图 2：角色权限 ================= */
+  .role-layout{ display:flex; background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; min-height:620px; }
+  .role-list{ width:240px; border-right:1px solid var(--line); padding:16px 0; flex-shrink:0; }
+  .rl-head{ display:flex; align-items:center; padding:0 16px 14px; }
+  .rl-head .t{ font-size:15px; font-weight:600; }
+  .rl-group-title{ display:flex; align-items:center; gap:8px; padding:8px 16px; font-size:12.5px; color:var(--ink-3); }
+  .role-item{ display:flex; align-items:center; gap:9px; padding:10px 16px; font-size:14px; color:var(--ink-2); cursor:pointer; border-left:2px solid transparent; }
+  .role-item:hover{ background:#f7f8fa; }
+  .role-item.active{ background:var(--blue-soft); color:var(--blue); font-weight:600; border-left-color:var(--blue); }
+  .role-item .ic{ width:16px; height:16px; flex-shrink:0; }
+  .role-item .lock-ic{ margin-left:auto; opacity:.5; }
+  .role-item .cnt{ margin-left:auto; font-size:12px; color:var(--ink-3); }
+  .role-item.active .cnt{ color:var(--blue); }
+
+  .role-detail{ flex:1; padding:24px 28px; overflow:hidden; }
+  .rd-head{ display:flex; align-items:center; padding-bottom:18px; border-bottom:1px solid var(--line); margin-bottom:22px; }
+  .rd-title{ font-size:17px; font-weight:600; }
+  .rd-desc{ font-size:13px; color:var(--ink-3); margin-top:4px; max-width:520px; line-height:1.6; }
+  .rd-actions{ margin-left:auto; display:flex; gap:10px; }
+
+  .section-title{ font-size:15px; font-weight:600; margin-bottom:6px; }
+  .section-sub{ font-size:12.5px; color:var(--ink-3); margin-bottom:14px; line-height:1.6; }
+
+  /* 操作权限 grid */
+  .op-grid{ display:flex; gap:12px; margin-bottom:30px; }
+  .op-card{ flex:1; border:1px solid var(--line-2); border-radius:10px; padding:14px 16px; cursor:pointer; }
+  .op-card.on{ border-color:var(--blue); background:var(--blue-soft); }
+  .op-card .op-top{ display:flex; align-items:center; gap:9px; margin-bottom:6px; }
+  .op-check{ width:17px; height:17px; border:1.5px solid var(--line-2); border-radius:4px; flex-shrink:0; position:relative; background:#fff; }
+  .op-card.on .op-check{ background:var(--blue); border-color:var(--blue); }
+  .op-card.on .op-check::after{ content:'✓'; color:#fff; font-size:12px; position:absolute; left:2.5px; top:-1px; }
+  .op-name{ font-size:14px; font-weight:600; }
+  .op-desc{ font-size:12px; color:var(--ink-3); line-height:1.6; }
+  .base-note{ font-size:12.5px; color:var(--ink-2); background:#f9fafc; border:1px solid var(--line); border-radius:8px; padding:10px 13px; margin-bottom:18px; }
+
+  /* 菜单树 */
+  .menu-tree{ border:1px solid var(--line); border-radius:10px; padding:8px 0; }
+  .menu-group{ border-bottom:1px solid var(--line); }
+  .menu-group:last-child{ border-bottom:none; }
+  .mg-parent{ display:flex; align-items:center; gap:10px; padding:11px 16px; cursor:pointer; font-size:14px; font-weight:600; }
+  .mg-parent:hover{ background:#fafbfc; }
+  .chk{ width:16px; height:16px; border:1.5px solid var(--line-2); border-radius:4px; flex-shrink:0; position:relative; background:#fff; }
+  .chk.on{ background:var(--blue); border-color:var(--blue); }
+  .chk.on::after{ content:'✓'; color:#fff; font-size:11px; position:absolute; left:2px; top:-2px; }
+  .chk.partial{ background:#fff; border-color:var(--blue); }
+  .chk.partial::after{ content:''; position:absolute; left:3px; top:6.5px; width:8px; height:2px; background:var(--blue); border-radius:1px; }
+  .mg-arrow{ margin-left:auto; color:var(--ink-3); font-size:11px; transition:.15s; }
+  .mg-arrow.open{ transform:rotate(90deg); }
+  .mg-children{ padding:2px 0 8px 0; }
+  .mc-item{ display:flex; align-items:center; gap:10px; padding:8px 16px 8px 46px; cursor:pointer; font-size:13.5px; color:var(--ink-2); }
+  .mc-item:hover{ background:#fafbfc; }
+
+  .ro-banner{ background:#f9fafc; border:1px solid var(--line); border-radius:8px; padding:10px 14px; font-size:12.5px; color:var(--ink-3); margin-bottom:18px; }
+  .detail-readonly .op-card, .detail-readonly .mg-parent, .detail-readonly .mc-item{ pointer-events:none; opacity:.7; }
+
+  /* ================= 视图 3：违规提醒 ================= */
+  #view-wecom { gap:24px; align-items:flex-start; }
   .col-config{ flex:1; min-width:0; }
   .col-preview{ width:330px; flex-shrink:0; }
 
   .master-switch{ display:flex; align-items:center; gap:10px; font-size:13.5px; color:var(--ink-2); }
-  .card{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:22px 24px; margin-bottom:18px; }
-  .card-title{ font-size:15px; font-weight:600; margin-bottom:4px; display:flex; align-items:center; gap:8px; }
-  .card-sub{ font-size:12.5px; color:var(--ink-3); margin-bottom:18px; line-height:1.6; }
+  .wecom-card-wrap{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:22px 24px; margin-bottom:18px; }
+  .wecom-card-wrap .card-title{ font-size:15px; font-weight:600; margin-bottom:4px; display:flex; align-items:center; gap:8px; }
+  .wecom-card-wrap .card-sub{ font-size:12.5px; color:var(--ink-3); margin-bottom:18px; line-height:1.6; }
 
-  .field{ margin-bottom:18px; }
-  .field:last-child{ margin-bottom:0; }
-  .field label{ display:block; font-size:13.5px; color:var(--ink); margin-bottom:8px; font-weight:500; }
-  .field label .req{ color:var(--red); margin-right:3px; }
-  .input-row{ display:flex; gap:10px; }
-  input[type=text], input[type=number]{ flex:1; padding:9px 12px; border:1px solid var(--line-2); border-radius:8px; font-size:13.5px; outline:none; width:100%; }
-  input:focus{ border-color:var(--blue); }
   .test-ok{ font-size:12.5px; color:var(--green); display:inline-flex; align-items:center; gap:5px; margin-top:8px; }
 
-  /* 开关 */
+  /* 开关 (Toggle) */
   .switch{ position:relative; width:40px; height:22px; flex-shrink:0; cursor:pointer; display:inline-block; }
   .switch input{ display:none; }
   .switch .track{ position:absolute; inset:0; background:#d4d8e0; border-radius:11px; transition:.18s; }
@@ -145,7 +174,7 @@
   .switch input:checked + .track{ background:var(--blue); }
   .switch input:checked + .track + .thumb{ transform:translateX(18px); }
 
-  /* 事件行 */
+  /* 告警事件列表 */
   .event-row{ display:flex; align-items:flex-start; gap:13px; padding:15px; border:1px solid var(--line); border-radius:10px; margin-bottom:11px; }
   .event-row.on{ border-color:#c5cef5; background:#fafbff; }
   .event-main{ flex:1; }
@@ -156,28 +185,27 @@
   .lv-low{ background:#eef0f3; color:var(--ink-2); }
   .event-desc{ font-size:12.5px; color:var(--ink-3); margin-top:5px; line-height:1.6; }
 
-  /* 范围选择器 */
-  .seg{ display:inline-flex; background:#f5f6f8; border:1px solid var(--line-2); border-radius:8px; padding:3px; margin-bottom:12px; }
-  .seg-item{ padding:6px 15px; font-size:13px; color:var(--ink-2); border-radius:6px; cursor:pointer; }
-  .seg-item.active{ background:#fff; color:var(--blue); font-weight:500; box-shadow:0 1px 2px rgba(0,0,0,.06); }
+  /* 账号选择组件共享 (视图1/3) */
+  .acc-list, .acc-grid{ margin-top:2px; }
   .acc-pick{ display:none; }
   .acc-pick.show{ display:block; }
   .acc-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-  
-  /* 通用账号 Item (合并两边的样式) */
-  .acc-item{ display:flex; align-items:center; gap:9px; padding:9px 12px; border:1px solid var(--line); border-radius:8px; cursor:pointer; font-size:13.5px; margin-bottom:7px; }
-  .acc-grid .acc-item { margin-bottom: 0; }
+  .acc-item{ display:flex; align-items:center; gap:9px; padding:10px 12px; border:1px solid var(--line); border-radius:8px; margin-bottom:7px; cursor:pointer; font-size:13.5px; }
+  .acc-grid .acc-item{ margin-bottom:0; }
   .acc-item:hover{ background:#f7f8fa; }
   .acc-check{ width:16px; height:16px; border:1.5px solid var(--line-2); border-radius:4px; flex-shrink:0; position:relative; }
   .acc-item.on .acc-check{ background:var(--blue); border-color:var(--blue); }
   .acc-item.on .acc-check::after{ content:'✓'; color:#fff; font-size:11px; position:absolute; left:2px; top:-2px; }
   .acc-plat{ margin-left:auto; font-size:11.5px; color:var(--ink-3); }
 
-  /* 频次控制 */
+  .seg{ display:inline-flex; background:#f5f6f8; border:1px solid var(--line-2); border-radius:8px; padding:3px; margin-bottom:12px; }
+  .seg-item{ padding:6px 15px; font-size:13px; color:var(--ink-2); border-radius:6px; cursor:pointer; }
+  .seg-item.active{ background:#fff; color:var(--blue); font-weight:500; box-shadow:0 1px 2px rgba(0,0,0,.06); }
+  
   .freq-row{ display:flex; align-items:center; gap:10px; font-size:13.5px; color:var(--ink-2); }
-  .freq-row input[type=number]{ width:64px; flex:none; text-align:center; }
+  .freq-row input[type=number]{ width:64px; flex:none; text-align:center; padding:9px 12px; border:1px solid var(--line-2); border-radius:8px; font-size:13.5px; outline:none; }
 
-  /* 预览卡片 (企微) */
+  /* 企微预览卡片 */
   .preview-sticky{ position:sticky; top:24px; }
   .preview-label{ font-size:12.5px; color:var(--ink-3); margin-bottom:10px; display:flex; align-items:center; gap:6px; }
   .wecom-bg{ background:#f0f2f5; border-radius:14px; padding:18px; }
@@ -196,6 +224,13 @@
   .preview-switcher{ display:flex; gap:6px; margin-top:14px; }
   .pv-btn{ flex:1; padding:7px; font-size:12px; text-align:center; border:1px solid var(--line-2); border-radius:7px; cursor:pointer; color:var(--ink-2); background:#fff; }
   .pv-btn.active{ border-color:var(--blue); color:var(--blue); background:var(--blue-soft); }
+
+  .col-config.readonly input,
+  .col-config.readonly .switch,
+  .col-config.readonly .btn-ghost,
+  .col-config.readonly .btn-primary,
+  .col-config.readonly .seg,
+  .col-config.readonly .acc-item{ pointer-events:none; opacity:.5; }
 </style>
 </head>
 <body>
@@ -226,8 +261,8 @@
       </div>
       <div class="nav-group">
         <div class="nav-title"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>系统设置</div>
-        <!-- 路由切换按钮 -->
         <div class="nav-row">
+          <span class="nav-item active" id="nav-account" onclick="switchView('account')">帐号管理</span>
           <span class="nav-item" id="nav-role" onclick="switchView('role')">角色权限</span>
         </div>
         <div class="nav-row">
@@ -237,48 +272,79 @@
       </div>
     </aside>
 
-    <main class="main">
+    <main class="main" id="main-container">
       
-      <!-- ================= 视图 1：角色权限 ================= -->
-      <div id="view-role" class="view-panel">
+      <!-- ================= 视图 1：账号管理 ================= -->
+      <div id="view-account">
         <div class="page-head">
-          <h1>角色权限</h1>
+          <h1>账号管理</h1>
           <span class="spacer"></span>
+          <button class="btn-primary" onclick="openModal()">+ 添加账号</button>
         </div>
+        <div class="note">
+          <b>角色</b>决定该账号能用哪些功能（在「角色权限」中维护）；<b>数据范围</b>决定该账号能看到哪些数据，与角色相互独立、按账号单独配置。本租户内账号仅能看到本租户数据。
+        </div>
+        <div class="account-card">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:20%">用户名</th>
+                <th style="width:13%">角色</th>
+                <th style="width:37%">数据范围</th>
+                <th style="width:15%">创建时间</th>
+                <th style="width:15%">操作</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
 
+      <!-- ================= 视图 2：角色权限 ================= -->
+      <div id="view-role" style="display:none;">
+        <div class="page-head"><h1>角色权限</h1></div>
         <div class="role-layout">
           <div class="role-list">
-            <div class="rl-head"><span class="t">角色</span><span class="spacer"></span></div>
-            <div class="rl-group-title">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8a909e" stroke-width="2"><circle cx="9" cy="7" r="3"/><path d="M3 20a6 6 0 0112 0"/></svg>
-              默认角色
+            <div class="rl-head">
+              <span class="t">角色</span><span class="spacer"></span>
             </div>
-            <div id="roleItems"></div>
+            <div class="rl-group-title">系统角色</div>
+            <div id="defaultRoles"></div>
           </div>
           <div class="role-detail" id="roleDetail"></div>
         </div>
       </div>
 
-      <!-- ================= 视图 2：违规提醒 ================= -->
-      <div id="view-wecom" class="view-panel" style="display:none;">
+      <!-- ================= 视图 3：违规提醒 ================= -->
+      <div id="view-wecom" style="display:none;">
         <div class="col-config">
           <div class="page-head">
             <h1>违规提醒</h1>
             <span class="spacer"></span>
-            <div class="master-switch">
-              <span id="masterLabel">提醒已开启</span>
-              <label class="switch"><input type="checkbox" id="masterSwitch" checked onchange="onMaster()"><span class="track"></span><span class="thumb"></span></label>
+            <div style="display:flex;align-items:center;gap:14px;">
+              <div style="display:flex;background:#f5f6f8;border:1px solid var(--line-2);border-radius:8px;padding:3px;">
+                <span class="seg-item active" id="viewSuper" onclick="setView('super')" style="padding:5px 13px;">超管视角</span>
+                <span class="seg-item" id="viewReview" onclick="setView('review')" style="padding:5px 13px;">审核员视角</span>
+              </div>
+              <div class="master-switch">
+                <span id="masterLabel">提醒已开启</span>
+                <label class="switch"><input type="checkbox" id="masterSwitch" checked onchange="onMaster()"><span class="track"></span><span class="thumb"></span></label>
+              </div>
             </div>
           </div>
 
+          <div id="readonlyBanner" style="display:none; background:var(--blue-soft); border:1px solid #d7ddf9; border-radius:8px; padding:10px 14px; font-size:12.5px; color:#3a4a8c; margin-bottom:16px;">
+            当前为审核员视角，违规提醒配置仅可查看。如需修改 Webhook、告警事件或开关，请联系超级管理员。
+          </div>
+
           <!-- 企微机器人 -->
-          <div class="card">
+          <div class="wecom-card-wrap">
             <div class="card-title"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--wecom)" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M8 12h.01M16 12h.01M9 16s1 1 3 1 3-1 3-1"/></svg>企业微信群机器人</div>
             <div class="card-sub">在企业微信群聊中添加「群机器人」，复制其 Webhook 地址粘贴到这里。直播违规时，告警将推送到该群。</div>
             <div class="field">
               <label><span class="req">*</span>Webhook 地址</label>
-              <div class="input-row">
-                <input type="text" id="webhook" value="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=••••••••" >
+              <div class="input-row" style="display:flex; gap:10px;">
+                <input type="text" id="webhook" value="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=••••••••" style="flex:1;">
                 <button class="btn-ghost" onclick="testHook()">发送测试</button>
               </div>
               <div class="test-ok" id="testOk" style="display:none;">✓ 测试消息已发送，请在企微群中确认收到</div>
@@ -286,10 +352,9 @@
           </div>
 
           <!-- 告警事件 -->
-          <div class="card">
+          <div class="wecom-card-wrap">
             <div class="card-title">触发告警的事件</div>
             <div class="card-sub">勾选哪些事件需要推送企微告警。不同事件紧急程度不同，卡片样式与是否 @所有人 也不同。</div>
-
             <div class="event-row on" id="ev1">
               <label class="switch"><input type="checkbox" checked onchange="toggleEvent('ev1',this)"><span class="track"></span><span class="thumb"></span></label>
               <div class="event-main">
@@ -297,7 +362,6 @@
                 <div class="event-desc">直播正在进行、内容已播出。AI 实时识别到违规时立即推送，卡片标红并 @所有人，便于运营第一时间决策是否处置。</div>
               </div>
             </div>
-
             <div class="event-row on" id="ev2">
               <label class="switch"><input type="checkbox" checked onchange="toggleEvent('ev2',this)"><span class="track"></span><span class="thumb"></span></label>
               <div class="event-main">
@@ -305,7 +369,6 @@
                 <div class="event-desc">报备阶段、尚未开播。AI 判定报备材料不通过、转入待人工复核时推送，提醒审核员尽快处理。</div>
               </div>
             </div>
-
             <div class="event-row" id="ev3">
               <label class="switch"><input type="checkbox" onchange="toggleEvent('ev3',this)"><span class="track"></span><span class="thumb"></span></label>
               <div class="event-main">
@@ -316,12 +379,12 @@
           </div>
 
           <!-- 生效范围 -->
-          <div class="card">
+          <div class="wecom-card-wrap">
             <div class="card-title">告警生效的主播账号</div>
             <div class="card-sub">指定告警对哪些主播账号生效，避免无关账号刷屏。</div>
             <div class="seg">
-              <span class="seg-item active" id="segAll" onclick="setScope('all')">全部主播账号</span>
-              <span class="seg-item" id="segSpec" onclick="setScope('spec')">指定主播账号</span>
+              <span class="seg-item active" id="segAll" onclick="setWecomScope('all')">全部主播账号</span>
+              <span class="seg-item" id="segSpec" onclick="setWecomScope('spec')">指定主播账号</span>
             </div>
             <div class="acc-pick" id="accPick">
               <div class="acc-grid" id="accGrid"></div>
@@ -329,13 +392,11 @@
           </div>
 
           <!-- 限频 -->
-          <div class="card">
+          <div class="wecom-card-wrap">
             <div class="card-title">防刷屏设置</div>
             <div class="card-sub">同一场直播持续违规时，聚合推送，避免短时间内大量重复告警。</div>
             <div class="freq-row">
-              同一主播账号，每
-              <input type="number" value="5" min="1">
-              分钟内最多推送 1 条，期间累计违规次数合并显示。
+              同一主播账号，每 <input type="number" value="5" min="1"> 分钟内最多推送 1 条，期间累计违规次数合并显示。
             </div>
           </div>
         </div>
@@ -355,43 +416,57 @@
           </div>
         </div>
       </div>
-      
+
     </main>
   </div>
 
-  <!-- ================= 弹窗组件区 ================= -->
-  
-  <!-- 角色权限：配置抽屉 -->
-  <div class="drawer-mask" id="drawerMask">
-    <div class="drawer">
-      <div class="drawer-head">
-        <h3>审核员 · 按成员配置数据范围</h3>
-        <span class="x" onclick="closeDrawer()">×</span>
+  <!-- ================= 弹窗：添加账号 (用于账号管理) ================= -->
+  <div class="mask" id="mask">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="modalTitle">添加账号</h3>
+        <span class="x" onclick="closeModal()">×</span>
       </div>
-      <div class="drawer-sub">审核员的可见数据按成员各自指定。同样是审核员，不同成员可负责不同的主播账号，实现团队分工与数据隔离。</div>
-      <div class="drawer-body" id="drawerBody"></div>
-      <div class="drawer-foot"><button class="btn-cancel" onclick="closeDrawer()">关闭</button></div>
-    </div>
-  </div>
+      <div class="modal-body">
+        <div class="field">
+          <label><span class="req">*</span>用户名</label>
+          <input type="text" placeholder="请输入用户名" id="inpUser">
+        </div>
+        <div class="field" id="pwdField">
+          <label><span class="req">*</span>密码</label>
+          <input type="password" value="********" id="inpPwd">
+        </div>
+        <div class="field">
+          <label><span class="req">*</span>角色</label>
+          <select id="roleSelect">
+            <option value="submit">提交员</option>
+            <option value="review">审核员</option>
+            <option value="super">超级管理员</option>
+          </select>
+          <div class="field-hint">角色只决定功能权限。如需新建角色，请前往「角色权限」。</div>
+        </div>
 
-  <!-- 角色权限：账号选择弹框 -->
-  <div class="pop-mask" id="popMask">
-    <div class="popover">
-      <h4 id="popTitle">设置可见主播账号</h4>
-      <div id="popScopeChoice">
-        <div class="radio-row" id="popRowAll" onclick="popSetMode('all')">
-          <span class="radio-dot"></span>
-          <span class="rr-txt"><span class="rr-main">本租户全部账号</span><div class="rr-sub">能看到本租户内所有主播账号的数据</div></span>
-        </div>
-        <div class="radio-row" id="popRowSpec" onclick="popSetMode('spec')">
-          <span class="radio-dot"></span>
-          <span class="rr-txt"><span class="rr-main">指定主播账号</span><div class="rr-sub">只负责选定的账号，按分工隔离</div></span>
+        <div class="scope-block">
+          <div class="sb-head"><span class="dot"></span>数据范围</div>
+          <div class="sb-desc">控制该账号能看到哪些数据，与所选角色无关，按账号单独设置。</div>
+          <div class="radio-row sel" id="scAll" onclick="setAccountScope('all')">
+            <span class="radio-dot"></span>
+            <span class="rr-txt">本租户全部数据<div class="rr-sub">能看到本租户内所有主播账号的报备与直播</div></span>
+          </div>
+          <div class="radio-row" id="scSpec" onclick="setAccountScope('spec')">
+            <span class="radio-dot"></span>
+            <span class="rr-txt">指定主播账号<div class="rr-sub">只能看到选定主播账号的数据，用于团队分工</div></span>
+          </div>
+          <div class="acc-list" id="accList" style="display:none;"></div>
+          <div class="radio-row" id="scSelf" onclick="setAccountScope('self')">
+            <span class="radio-dot"></span>
+            <span class="rr-txt">仅本人提交<div class="rr-sub">只能看到自己提交的报备，适合提交员</div></span>
+          </div>
         </div>
       </div>
-      <div class="acc-list" id="popAccList"></div>
-      <div class="pop-foot">
-        <button class="btn-cancel" onclick="closePop()">取消</button>
-        <button class="btn-primary" onclick="savePop()">保存</button>
+      <div class="modal-foot">
+        <button class="btn-cancel" onclick="closeModal()">取消</button>
+        <button class="btn-primary" onclick="closeModal()">确认</button>
       </div>
     </div>
   </div>
@@ -407,200 +482,243 @@
     {name:'yvon', plat:'抖音'},
   ];
 
-  // ================= 路由控制逻辑 =================
-  function switchView(viewId) {
-    const isRole = viewId === 'role';
-    // 切换内容显隐
-    document.getElementById('view-role').style.display = isRole ? 'block' : 'none';
-    document.getElementById('view-wecom').style.display = !isRole ? 'flex' : 'none';
-    // 切换侧边栏状态
-    document.getElementById('nav-role').classList.toggle('active', isRole);
-    document.getElementById('nav-wecom').classList.toggle('active', !isRole);
+  // ================= 路由逻辑 =================
+  function switchView(view) {
+    document.getElementById('nav-account').classList.toggle('active', view === 'account');
+    document.getElementById('nav-role').classList.toggle('active', view === 'role');
+    document.getElementById('nav-wecom').classList.toggle('active', view === 'wecom');
+
+    document.getElementById('view-account').style.display = view === 'account' ? 'block' : 'none';
+    document.getElementById('view-role').style.display = view === 'role' ? 'block' : 'none';
+    document.getElementById('view-wecom').style.display = view === 'wecom' ? 'flex' : 'none';
   }
 
-  // ================= 视图 1：角色权限逻辑 =================
-  const ROLES = [
-    { key:'super', name:'超级管理员', count:1, desc:'商家总管理员，由平台开通。拥有本租户内全部数据权限。',
-      data:[ {mod:'公域直播质检', fn:'直播报备 / 直播列表', scope:'all'}, {mod:'基础数据', fn:'讲师库 / 主播账号', scope:'all'} ] },
-    { key:'review', name:'审核员', count:3, desc:'负责复核直播报备与直播违规。可见数据按成员各自指定的主播账号范围。',
-      data:[ {mod:'公域直播质检', fn:'直播报备 / 直播列表', scope:'by_member'} ] },
-    { key:'submit', name:'提交员', count:5, desc:'负责提交直播报备。默认仅能看到本人提交的报备，可按成员放开为全部。',
-      data:[ {mod:'公域直播质检', fn:'直播报备（提交视角）', scope:'by_member_submit'} ] },
+
+  // ================= 视图 1：账号管理 =================
+  const ROLE_META = {
+    super:{label:'超级管理员', cls:'role-super'},
+    review:{label:'审核员', cls:'role-review'},
+    submit:{label:'提交员', cls:'role-submit'},
+  };
+
+  const ACCOUNTS = [
+    {user:'xeadmin', sub:'系统管理员', role:'super', scope:{mode:'all',accounts:[]}, created:'2026-05-10'},
+    {user:'systemreviewer', sub:'', role:'review', scope:{mode:'spec',accounts:['mosin 小红书','mosin视频号推送','央视新闻']}, created:'2026-05-12'},
+    {user:'reviewer_dy', sub:'抖音组', role:'review', scope:{mode:'spec',accounts:['抖音号推送','yvon','每日财经AI电视']}, created:'2026-05-15'},
+    {user:'lead_submit', sub:'报备组主管', role:'submit', scope:{mode:'all',accounts:[]}, created:'2026-05-19'},
+    {user:'systemtest', sub:'', role:'submit', scope:{mode:'self',accounts:[]}, created:'2026-05-20'},
   ];
 
-  let REVIEW_MEMBERS = [
-    {user:'systemreviewer', sub:'', mode:'spec', accounts:['mosin 小红书','mosin视频号推送','央视新闻']},
-    {user:'reviewer_all', sub:'', mode:'all', accounts:[]},
-    {user:'reviewer_dy', sub:'抖音组', mode:'spec', accounts:['抖音号推送','yvon','每日财经AI电视']},
-  ];
-  let SUBMIT_MEMBERS = [
-    {user:'lead_submit', sub:'报备组主管', mode:'all'},
-    {user:'systemtest', sub:'', mode:'self'},
+  function scopeLabel(s){
+    if(s.mode==='all') return {txt:'本租户全部数据', tags:null};
+    if(s.mode==='self') return {txt:'仅本人提交', tags:null};
+    return {txt:'指定主播账号 · '+s.accounts.length+' 个', tags:s.accounts};
+  }
+
+  function renderTable(){
+    document.getElementById('tbody').innerHTML = ACCOUNTS.map((a,i)=>{
+      const r = ROLE_META[a.role];
+      const sl = scopeLabel(a.scope);
+      let scopeCell = `<span class="scope-text">${sl.txt}</span>`;
+      if(sl.tags) scopeCell += `<div class="scope-tags">${sl.tags.map(t=>`<span class="scope-tag">${t}</span>`).join('')}</div>`;
+      return `<tr>
+        <td><div class="uname">${a.user}</div>${a.sub?`<div class="usub">${a.sub}</div>`:''}</td>
+        <td><span class="role-pill ${r.cls}">${r.label}</span></td>
+        <td>${scopeCell}</td>
+        <td><span class="scope-text">${a.created}</span></td>
+        <td class="op"><a onclick="openModal(${i})">编辑</a><a>重置密码</a></td>
+      </tr>`;
+    }).join('');
+  }
+
+  let editIdx = -1, curMode='all', curAccounts=[];
+  function openModal(idx){
+    document.getElementById('mask').classList.add('show');
+    if(typeof idx==='number'){
+      editIdx=idx; const a=ACCOUNTS[idx];
+      document.getElementById('modalTitle').textContent='编辑账号';
+      document.getElementById('inpUser').value=a.user;
+      document.getElementById('roleSelect').value=a.role;
+      curMode=a.scope.mode; curAccounts=a.scope.accounts.slice();
+    }else{
+      editIdx=-1;
+      document.getElementById('modalTitle').textContent='添加账号';
+      document.getElementById('inpUser').value='';
+      document.getElementById('roleSelect').value='submit';
+      curMode='all'; curAccounts=[];
+    }
+    applyScopeUI();
+  }
+  function closeModal(){
+    if(editIdx>=0){
+      ACCOUNTS[editIdx].role=document.getElementById('roleSelect').value;
+      ACCOUNTS[editIdx].scope={mode:curMode, accounts:curMode==='spec'?curAccounts.slice():[]};
+      renderTable();
+    }
+    document.getElementById('mask').classList.remove('show');
+  }
+
+  function setAccountScope(m){ curMode=m; applyScopeUI(); }
+  function applyScopeUI(){
+    document.getElementById('scAll').classList.toggle('sel',curMode==='all');
+    document.getElementById('scSpec').classList.toggle('sel',curMode==='spec');
+    document.getElementById('scSelf').classList.toggle('sel',curMode==='self');
+    const list=document.getElementById('accList');
+    list.style.display = curMode==='spec'?'':'none';
+    if(curMode==='spec'){
+      list.innerHTML = STREAM_ACCOUNTS.map(a=>`<div class="acc-item ${curAccounts.includes(a.name)?'on':''}" onclick="toggleAccountAcc('${a.name}')">
+        <span class="acc-check"></span>${a.name}<span class="acc-plat">${a.plat}</span></div>`).join('');
+    }
+  }
+  function toggleAccountAcc(name){
+    const i=curAccounts.indexOf(name); if(i>=0)curAccounts.splice(i,1); else curAccounts.push(name);
+    applyScopeUI();
+  }
+
+
+  // ================= 视图 2：角色权限 =================
+  const MENU = [
+    {g:'基础数据', items:['讲师库']},
+    {g:'规则中心', items:['策略列表','敏感词库','正则规则','AI语义模版']},
+    {g:'公域直播质检', items:['主播帐号','直播报备','直播列表']},
+    {g:'系统设置', items:['帐号管理','角色权限','违规提醒','AI模型配置']},
   ];
 
-  let curRole = 'super';
-  function selectRole(k){ curRole=k; renderRoleItems(); renderDetail(); }
+  function allMenus(){ const o={}; MENU.forEach(g=>g.items.forEach(it=>o[it]=true)); return o; }
+  function menus(list){ const o={}; MENU.forEach(g=>g.items.forEach(it=>o[it]=list.includes(it))); return o; }
 
-  function renderRoleItems(){
-    document.getElementById('roleItems').innerHTML = ROLES.map(r=>`
-      <div class="role-item ${curRole===r.key?'active':''}" onclick="selectRole('${r.key}')">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>
-        ${r.name}
-      </div>`).join('');
+  let ROLES_DATA = [
+    { key:'super', name:'超级管理员', preset:true, count:1,
+      desc:'商家总管理员，由平台开通。拥有全部操作权限与全部菜单，不可修改。',
+      ops:{edit:true,audit:true,stat:true}, menu:allMenus() },
+    { key:'review', name:'审核员', preset:true, count:3,
+      desc:'负责复核直播报备与直播违规。',
+      ops:{edit:false,audit:true,stat:false},
+      menu:menus(['讲师库','策略列表','敏感词库','主播帐号','直播报备','直播列表']) },
+    { key:'submit', name:'提交员', preset:true, count:5,
+      desc:'负责提交直播报备。',
+      ops:{edit:true,audit:false,stat:false},
+      menu:menus(['主播帐号','直播报备']) },
+  ];
+
+  const OPS = [
+    {k:'edit', name:'编辑', desc:'新增/修改/配置：新建主播账号、新建报备、改策略、配敏感词、配置违规提醒、管账号与角色等'},
+    {k:'audit', name:'审核', desc:'审核直播报备、确认/误报直播违规'},
+    {k:'stat', name:'统计', desc:'数据导出：违规记录、报表导出'},
+  ];
+
+  let curKey='review', expanded={};
+  MENU.forEach(g=>expanded[g.g]=true);
+
+  function selectRole(k){ curKey=k; renderList(); renderDetail(); }
+  function renderList(){
+    const tpl = r=>`<div class="role-item ${curKey===r.key?'active':''}" onclick="selectRole('${r.key}')">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>
+      ${r.name}
+      ${r.key==='super'?'<svg class="lock-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8a909e" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>':`<span class="cnt">${r.count}人</span>`}
+    </div>`;
+    document.getElementById('defaultRoles').innerHTML = ROLES_DATA.map(tpl).join('');
   }
 
   function renderDetail(){
-    const r = ROLES.find(x=>x.key===curRole);
-    const dataRows = r.data.map(d=>{
-      let scopeCell='';
-      if(d.scope==='all'){ scopeCell='<span class="scope-all">全部</span>'; }
-      else if(d.scope==='by_member'){
-        scopeCell=`<span class="scope-link" onclick="openDrawer('review')">按成员配置 · ${REVIEW_MEMBERS.length}人 ›</span>
-          <div class="mini-note">不同审核员可负责不同主播账号</div>`;
-      } else if(d.scope==='by_member_submit'){
-        scopeCell=`<span class="scope-link" onclick="openDrawer('submit')">按成员配置 · ${SUBMIT_MEMBERS.length}人 ›</span>
-          <div class="mini-note">默认仅本人提交，可放开为全部</div>`;
-      }
-      return `<tr><td>${d.mod}</td><td>${d.fn}</td><td>${scopeCell}</td></tr>`;
+    const r = ROLES_DATA.find(x=>x.key===curKey);
+    const ro = r.preset && r.key==='super';
+    const opCards = OPS.map(o=>`
+      <div class="op-card ${r.ops[o.k]?'on':''}" onclick="${ro?'':`toggleOp('${o.k}')`}">
+        <div class="op-top"><span class="op-check"></span><span class="op-name">${o.name}</span></div>
+        <div class="op-desc">${o.desc}</div>
+      </div>`).join('');
+
+    const tree = MENU.map(g=>{
+      const states = g.items.map(it=>r.menu[it]);
+      const all = states.every(Boolean), none = states.every(s=>!s);
+      const pcls = all?'chk on':(none?'chk':'chk partial');
+      const open = expanded[g.g];
+      const children = g.items.map(it=>`
+        <div class="mc-item" onclick="${ro?'':`toggleMenu('${g.g}','${it}')`}">
+          <span class="chk ${r.menu[it]?'on':''}"></span>${it}
+        </div>`).join('');
+      return `<div class="menu-group">
+        <div class="mg-parent">
+          <span class="${pcls}" onclick="event.stopPropagation();${ro?'':`toggleGroup('${g.g}')`}"></span>
+          <span onclick="event.stopPropagation();toggleExpand('${g.g}')" style="flex:1;cursor:pointer;">${g.g}</span>
+          <span class="mg-arrow ${open?'open':''}" onclick="event.stopPropagation();toggleExpand('${g.g}')">▸</span>
+        </div>
+        ${open?`<div class="mg-children">${children}</div>`:''}
+      </div>`;
     }).join('');
 
     document.getElementById('roleDetail').innerHTML = `
       <div class="rd-head">
-        <div class="ava"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg></div>
-        <div><div class="rd-title">${r.name}</div><div class="rd-desc">${r.desc}</div></div>
-        <div class="rd-count">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="3"/><path d="M3 20a6 6 0 0112 0M16 7a3 3 0 010 6M21 20a5 5 0 00-4-5"/></svg>包含 ${r.count} 人
+        <div>
+          <div class="rd-title">${r.name}</div>
+          <div class="rd-desc">${r.desc}</div>
+        </div>
+        <div class="rd-actions">
+          <button class="btn-primary ${ro?'disabled':''}" style="${ro?'opacity:.4;pointer-events:none;':''}">保存</button>
         </div>
       </div>
-      <div class="section-title">数据权限 <svg class="q" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div>
-      <table class="data-table">
-        <thead><tr><th style="width:26%">所属模块</th><th style="width:38%">涉及功能</th><th style="width:36%">可见范围</th></tr></thead>
-        <tbody>${dataRows}</tbody>
-      </table>`;
+      ${ro?'<div class="ro-banner">超级管理员为系统预置角色，拥有全部权限，不可修改。</div>':''}
+      <div class="${ro?'detail-readonly':''}">
+        <div class="section-title">操作权限</div>
+        <div class="section-sub">决定该角色能做哪些动作。不勾任何项时，默认仅能「查询/查看」。可组合勾选。</div>
+        <div class="base-note">基础：任何角色都至少可以「查询/查看」其菜单内的数据。以下为在此之上叠加的操作能力。</div>
+        <div class="op-grid">${opCards}</div>
+
+        <div class="section-title">菜单权限</div>
+        <div class="section-sub">勾选该角色可见的菜单。父级勾选 = 该分组下全部菜单。</div>
+        <div class="menu-tree">${tree}</div>
+      </div>`;
   }
 
-  let drawerType='review';
-  function openDrawer(type){
-    drawerType=type;
-    document.getElementById('drawerMask').classList.add('show');
-    document.querySelector('.drawer-head h3').textContent = type==='review'?'审核员 · 按成员配置数据范围':'提交员 · 按成员配置数据范围';
-    document.querySelector('.drawer-sub').textContent = type==='review'
-      ? '审核员的可见数据按成员各自指定。同样是审核员，不同成员可负责不同的主播账号，实现团队分工与数据隔离。'
-      : '提交员默认仅能看到本人提交的报备；如为报备组主管，可放开为查看本租户全部提交。';
-    renderDrawer();
+  function toggleOp(k){ const r=ROLES_DATA.find(x=>x.key===curKey); r.ops[k]=!r.ops[k]; renderDetail(); }
+  function toggleMenu(g,it){ const r=ROLES_DATA.find(x=>x.key===curKey); r.menu[it]=!r.menu[it]; renderDetail(); }
+  function toggleGroup(g){
+    const r=ROLES_DATA.find(x=>x.key===curKey);
+    const grp=MENU.find(x=>x.g===g); const all=grp.items.every(it=>r.menu[it]);
+    grp.items.forEach(it=>r.menu[it]=!all); renderDetail();
   }
-  function closeDrawer(){ document.getElementById('drawerMask').classList.remove('show'); }
+  function toggleExpand(g){ expanded[g]=!expanded[g]; renderDetail(); }
 
-  function renderDrawer(){
-    const body=document.getElementById('drawerBody');
-    if(drawerType==='review'){
-      body.innerHTML = REVIEW_MEMBERS.map((m,i)=>{
-        const scopeHtml = m.mode==='all'
-          ? '<div class="mr-mode">本租户全部账号</div>'
-          : `<div class="mr-mode">指定主播账号 · ${m.accounts.length} 个</div><div>${m.accounts.map(a=>`<span class="scope-tag">${a}</span>`).join('')}</div>`;
-        return `<div class="member-row">
-          <div class="mr-top">
-            <div class="mr-ava">${m.user.slice(0,1).toUpperCase()}</div>
-            <div><div class="mr-name">${m.user}</div>${m.sub?`<div class="mr-sub">${m.sub}</div>`:''}</div>
-            <span class="mr-edit" onclick="openPop('review',${i})">编辑</span>
-          </div>
-          <div class="mr-scope">${scopeHtml}</div>
-        </div>`;
-      }).join('');
-    } else {
-      body.innerHTML = SUBMIT_MEMBERS.map((m,i)=>{
-        const txt = m.mode==='all'?'本租户全部提交':'仅本人提交';
-        return `<div class="member-row">
-          <div class="mr-top">
-            <div class="mr-ava">${m.user.slice(0,1).toUpperCase()}</div>
-            <div><div class="mr-name">${m.user}</div>${m.sub?`<div class="mr-sub">${m.sub}</div>`:''}</div>
-            <span class="mr-edit" onclick="openPop('submit',${i})">编辑</span>
-          </div>
-          <div class="mr-scope"><div class="mr-mode">${txt}</div></div>
-        </div>`;
-      }).join('');
-    }
-  }
 
-  let popType='review', popIdx=0, popMode='all', popAccounts=[];
-  function openPop(type,idx){
-    popType=type; popIdx=idx;
-    document.getElementById('popMask').classList.add('show');
-    const rows=document.getElementById('popScopeChoice').children;
-    if(type==='review'){
-      const m=REVIEW_MEMBERS[idx];
-      document.getElementById('popTitle').textContent=`设置可见主播账号 · ${m.user}`;
-      popMode=m.mode; popAccounts=m.accounts.slice();
-      rows[0].querySelector('.rr-main').textContent='本租户全部账号';
-      rows[0].querySelector('.rr-sub').textContent='能看到本租户内所有主播账号的数据';
-      rows[1].querySelector('.rr-main').textContent='指定主播账号';
-      rows[1].querySelector('.rr-sub').textContent='只负责选定的账号，按分工隔离';
-      renderPopChoice('all','spec');
-    } else {
-      const m=SUBMIT_MEMBERS[idx];
-      document.getElementById('popTitle').textContent=`设置可见范围 · ${m.user}`;
-      popMode=m.mode;
-      rows[0].querySelector('.rr-main').textContent='仅本人提交';
-      rows[0].querySelector('.rr-sub').textContent='默认，只能看到自己提交的报备';
-      rows[1].querySelector('.rr-main').textContent='本租户全部提交';
-      rows[1].querySelector('.rr-sub').textContent='适合报备组主管，可见全部提交';
-      renderPopChoice('self','all');
-    }
-  }
-  function renderPopChoice(v0,v1){
-    const all=document.getElementById('popRowAll'), spec=document.getElementById('popRowSpec');
-    all.dataset.val=v0; spec.dataset.val=v1;
-    all.classList.toggle('sel', popMode===v0);
-    spec.classList.toggle('sel', popMode===v1);
-    const list=document.getElementById('popAccList');
-    if(popType==='review' && popMode==='spec'){
-      list.style.display='';
-      list.innerHTML = STREAM_ACCOUNTS.map(a=>`<div class="acc-item ${popAccounts.includes(a.name)?'on':''}" onclick="popToggle('${a.name}')">
-        <span class="acc-check"></span>${a.name}<span class="acc-plat">${a.plat}</span></div>`).join('');
-    } else { list.style.display='none'; list.innerHTML=''; }
-  }
-  function popSetMode(which){
-    if(popType==='review'){ popMode = which==='all'?'all':'spec'; renderPopChoice('all','spec'); }
-    else { popMode = which==='all'?'self':'all'; renderPopChoice('self','all'); }
-  }
-  function popToggle(name){
-    const i=popAccounts.indexOf(name); if(i>=0)popAccounts.splice(i,1); else popAccounts.push(name);
-    renderPopChoice('all','spec');
-  }
-  function savePop(){
-    if(popType==='review'){
-      REVIEW_MEMBERS[popIdx].mode=popMode;
-      REVIEW_MEMBERS[popIdx].accounts = popMode==='spec'?popAccounts.slice():[];
-    } else { SUBMIT_MEMBERS[popIdx].mode=popMode; }
-    closePop(); renderDrawer(); renderDetail();
-  }
-  function closePop(){ document.getElementById('popMask').classList.remove('show'); }
-
-  // ================= 视图 2：违规提醒逻辑 =================
-  let scopeMode='all', pickedAcc=['mosin 小红书','央视新闻'];
+  // ================= 视图 3：违规提醒 =================
+  let wecomScopeMode='all', pickedAcc=['mosin 小红书','央视新闻'];
 
   function onMaster(){
     const on=document.getElementById('masterSwitch').checked;
     document.getElementById('masterLabel').textContent = on?'提醒已开启':'提醒已关闭';
   }
+
+  function setView(v){
+    const ro = v==='review';
+    document.getElementById('viewSuper').classList.toggle('active', !ro);
+    document.getElementById('viewReview').classList.toggle('active', ro);
+    document.querySelector('.col-config').classList.toggle('readonly', ro);
+    document.getElementById('readonlyBanner').style.display = ro ? '' : 'none';
+    document.querySelector('.master-switch').style.opacity = ro ? '.5' : '';
+    document.querySelector('.master-switch').style.pointerEvents = ro ? 'none' : '';
+  }
+  
   function testHook(){ document.getElementById('testOk').style.display=''; }
   function toggleEvent(id,el){ document.getElementById(id).classList.toggle('on', el.checked); }
 
-  function setScope(m){
-    scopeMode=m;
+  function setWecomScope(m){
+    wecomScopeMode=m;
     document.getElementById('segAll').classList.toggle('active',m==='all');
     document.getElementById('segSpec').classList.toggle('active',m==='spec');
     document.getElementById('accPick').classList.toggle('show',m==='spec');
   }
-  function renderAcc(){
+  
+  function renderWecomAcc(){
     document.getElementById('accGrid').innerHTML = STREAM_ACCOUNTS.map(a=>`
-      <div class="acc-item ${pickedAcc.includes(a.name)?'on':''}" onclick="toggleAcc('${a.name}')">
+      <div class="acc-item ${pickedAcc.includes(a.name)?'on':''}" onclick="toggleWecomAcc('${a.name}')">
         <span class="acc-check"></span>${a.name}<span class="acc-plat">${a.plat}</span>
       </div>`).join('');
   }
-  function toggleAcc(name){
+  
+  function toggleWecomAcc(name){
     const i=pickedAcc.indexOf(name); if(i>=0)pickedAcc.splice(i,1); else pickedAcc.push(name);
-    renderAcc();
+    renderWecomAcc();
   }
 
   const CARDS = {
@@ -634,12 +752,12 @@
   }
 
   // ================= 初始化 =================
-  renderRoleItems(); 
-  renderDetail();
-  renderAcc(); 
-  setPreview('high');
-  // 默认展示角色权限视图
-  switchView('role');
+  renderTable();         // 账号管理
+  renderList();          // 角色权限列表
+  renderDetail();        // 角色权限详情
+  renderWecomAcc();      // 企微账号选择器
+  setPreview('high');    // 企微卡片预览
+  switchView('account'); // 默认展示账号管理页
 </script>
 </body>
 </html>
