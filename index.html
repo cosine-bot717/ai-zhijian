@@ -224,13 +224,6 @@
   .preview-switcher{ display:flex; gap:6px; margin-top:14px; }
   .pv-btn{ flex:1; padding:7px; font-size:12px; text-align:center; border:1px solid var(--line-2); border-radius:7px; cursor:pointer; color:var(--ink-2); background:#fff; }
   .pv-btn.active{ border-color:var(--blue); color:var(--blue); background:var(--blue-soft); }
-
-  .col-config.readonly input,
-  .col-config.readonly .switch,
-  .col-config.readonly .btn-ghost,
-  .col-config.readonly .btn-primary,
-  .col-config.readonly .seg,
-  .col-config.readonly .acc-item{ pointer-events:none; opacity:.5; }
 </style>
 </head>
 <body>
@@ -321,20 +314,10 @@
           <div class="page-head">
             <h1>违规提醒</h1>
             <span class="spacer"></span>
-            <div style="display:flex;align-items:center;gap:14px;">
-              <div style="display:flex;background:#f5f6f8;border:1px solid var(--line-2);border-radius:8px;padding:3px;">
-                <span class="seg-item active" id="viewSuper" onclick="setView('super')" style="padding:5px 13px;">超管视角</span>
-                <span class="seg-item" id="viewReview" onclick="setView('review')" style="padding:5px 13px;">审核员视角</span>
-              </div>
-              <div class="master-switch">
-                <span id="masterLabel">提醒已开启</span>
-                <label class="switch"><input type="checkbox" id="masterSwitch" checked onchange="onMaster()"><span class="track"></span><span class="thumb"></span></label>
-              </div>
+            <div class="master-switch">
+              <span id="masterLabel">提醒已开启</span>
+              <label class="switch"><input type="checkbox" id="masterSwitch" checked onchange="onMaster()"><span class="track"></span><span class="thumb"></span></label>
             </div>
-          </div>
-
-          <div id="readonlyBanner" style="display:none; background:var(--blue-soft); border:1px solid #d7ddf9; border-radius:8px; padding:10px 14px; font-size:12.5px; color:#3a4a8c; margin-bottom:16px;">
-            当前为审核员视角，违规提醒配置仅可查看。如需修改 Webhook、告警事件或开关，请联系超级管理员。
           </div>
 
           <!-- 企微机器人 -->
@@ -689,16 +672,6 @@
     document.getElementById('masterLabel').textContent = on?'提醒已开启':'提醒已关闭';
   }
 
-  function setView(v){
-    const ro = v==='review';
-    document.getElementById('viewSuper').classList.toggle('active', !ro);
-    document.getElementById('viewReview').classList.toggle('active', ro);
-    document.querySelector('.col-config').classList.toggle('readonly', ro);
-    document.getElementById('readonlyBanner').style.display = ro ? '' : 'none';
-    document.querySelector('.master-switch').style.opacity = ro ? '.5' : '';
-    document.querySelector('.master-switch').style.pointerEvents = ro ? 'none' : '';
-  }
-  
   function testHook(){ document.getElementById('testOk').style.display=''; }
   function toggleEvent(id,el){ document.getElementById(id).classList.toggle('on', el.checked); }
 
