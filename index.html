@@ -191,7 +191,13 @@
   .col-config{ flex:1; min-width:0; }
   .col-preview{ width:330px; flex-shrink:0; }
 
-  .master-switch{ display:flex; align-items:center; gap:10px; font-size:13.5px; color:var(--ink-2); }
+  .master-switch{ display:none; }
+  .config-actions{ display:flex; justify-content:center; gap:12px; margin-top:24px; padding-top:20px; border-top:1px solid var(--line); }
+
+  /* Toast 全局提示 */
+  .toast{ position:fixed; top:30px; left:50%; transform:translateX(-50%) translateY(-12px); z-index:9999; background:#fff; color:var(--green); border:1px solid var(--line); padding:12px 22px; border-radius:8px; font-size:14px; box-shadow:0 6px 20px rgba(20,24,35,.12); display:flex; align-items:center; gap:8px; opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease; }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast .toast-ic{ width:18px; height:18px; border-radius:50%; background:var(--green); color:#fff; display:flex; align-items:center; justify-content:center; font-size:12px; }
   .wecom-card-wrap{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:22px 24px; margin-bottom:18px; }
   .wecom-card-wrap .card-title{ font-size:15px; font-weight:600; margin-bottom:4px; display:flex; align-items:center; gap:8px; }
   .wecom-card-wrap .card-sub{ font-size:12.5px; color:var(--ink-3); margin-bottom:18px; line-height:1.6; }
@@ -378,10 +384,6 @@
           <div class="page-head">
             <h1>违规提醒</h1>
             <span class="spacer"></span>
-            <div class="master-switch">
-              <span id="masterLabel">提醒已开启</span>
-              <label class="switch"><input type="checkbox" id="masterSwitch" checked onchange="onMaster()"><span class="track"></span><span class="thumb"></span></label>
-            </div>
           </div>
 
           <!-- 企微机器人 -->
@@ -423,6 +425,12 @@
                 <div class="event-desc">人工复核驳回报备时推送，作为结果通知，提醒提交人修改后重新提交。</div>
               </div>
             </div>
+          </div>
+
+          <!-- 底部操作栏 -->
+          <div class="config-actions">
+            <button class="btn-cancel" onclick="cancelWecomConfig()">取消</button>
+            <button class="btn-primary" onclick="saveWecomConfig()">保存</button>
           </div>
         </div>
 
@@ -1054,13 +1062,27 @@
 
 
   // ================= 视图 3：违规提醒 =================
-  function onMaster(){
-    const on=document.getElementById('masterSwitch').checked;
-    document.getElementById('masterLabel').textContent = on?'提醒已开启':'提醒已关闭';
-  }
-
   function testHook(){ document.getElementById('testOk').style.display=''; }
   function toggleEvent(id,el){ document.getElementById(id).classList.toggle('on', el.checked); }
+
+  // 保存 / 取消
+  function saveWecomConfig(){ showToast('保存成功'); }
+  function cancelWecomConfig(){ showToast('已取消'); }
+  let toastTimer = null;
+  function showToast(msg){
+    let t = document.getElementById('globalToast');
+    if(!t){
+      t = document.createElement('div');
+      t.id = 'globalToast';
+      t.className = 'toast';
+      t.innerHTML = '<span class="toast-ic">✓</span><span class="toast-msg"></span>';
+      document.body.appendChild(t);
+    }
+    t.querySelector('.toast-msg').textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=> t.classList.remove('show'), 2000);
+  }
 
   const CARDS = {
     high:{ color:'#e03131', title:'⚠ 直播实时违规告警', at:'@所有人',
