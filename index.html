@@ -86,10 +86,12 @@
   .ml-filters select:focus { border-color:var(--blue); }
   .ml-filters .f-label { font-size:13px; color:var(--ink-3); }
 
+  .account-card{ background:#fff; border:1px solid var(--line-2); border-radius:12px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.04); }
   .account-card table{ width:100%; border-collapse:collapse; }
-  .account-card thead th{ text-align:left; font-size:13px; color:var(--ink-3); font-weight:500; padding:16px 22px; background:#fafbfc; border-bottom:1px solid var(--line); }
+  .account-card thead th{ text-align:left; font-size:13px; color:var(--ink-2); font-weight:600; padding:14px 22px; background:#f5f6fa; border-bottom:1px solid var(--line-2); }
   .account-card tbody td{ padding:18px 22px; border-bottom:1px solid var(--line); font-size:14px; vertical-align:middle; }
   .account-card tbody tr:last-child td{ border-bottom:none; }
+  .account-card tbody tr:hover{ background:#fafbfc; }
   .uname{ font-weight:600; color:var(--ink); }
   .usub{ font-size:12.5px; color:var(--ink-3); margin-top:3px; }
   .role-pill{ font-size:12.5px; padding:3px 10px; border-radius:6px; display:inline-block; }
@@ -241,6 +243,35 @@
   .pv-btn{ flex:1; padding:7px; font-size:12px; text-align:center; border:1px solid var(--line-2); border-radius:7px; cursor:pointer; color:var(--ink-2); background:#fff; }
   .pv-btn.active{ border-color:var(--blue); color:var(--blue); background:var(--blue-soft); }
 
+  /* 违规提醒-规则列表 */
+  .rule-bot-name{ font-weight:600; color:var(--ink); }
+  .rule-bot-hook{ font-size:12px; color:var(--ink-3); margin-top:3px; }
+  .rule-lect-tags{ display:flex; flex-wrap:wrap; gap:5px; }
+  .rule-lect-tag{ background:#f0f3ff; color:var(--blue); font-size:12px; padding:2px 9px; border-radius:5px; }
+  .rule-evt-tags{ display:flex; flex-wrap:wrap; gap:5px; }
+  .rule-evt-tag{ font-size:11.5px; padding:2px 8px; border-radius:5px; background:#f0f1f4; color:var(--ink-2); }
+  .rule-status{ display:inline-flex; align-items:center; gap:6px; font-size:13px; }
+  .rule-dot{ width:7px; height:7px; border-radius:50%; }
+  .rule-on .rule-dot{ background:var(--green); } .rule-on{ color:var(--green); }
+  .rule-off .rule-dot{ background:var(--ink-3); } .rule-off{ color:var(--ink-3); }
+
+  /* 讲师选择器 */
+  .lect-picker{ border:1px solid var(--line-2); border-radius:8px; max-height:200px; overflow-y:auto; padding:6px; }
+  .lect-item{ display:flex; align-items:center; gap:9px; padding:9px 10px; border-radius:7px; cursor:pointer; font-size:13.5px; }
+  .lect-item:hover{ background:#f5f6f8; }
+  .lect-check{ width:16px; height:16px; border:1.5px solid var(--line-2); border-radius:4px; flex-shrink:0; position:relative; }
+  .lect-item.on .lect-check{ background:var(--blue); border-color:var(--blue); }
+  .lect-item.on .lect-check::after{ content:'✓'; color:#fff; font-size:11px; position:absolute; left:2px; top:-2px; }
+  .lect-item.disabled{ opacity:.45; cursor:not-allowed; }
+  .lect-bound{ margin-left:auto; font-size:11.5px; color:var(--ink-3); }
+
+  /* 规则事件勾选 */
+  .rule-event{ display:flex; align-items:center; gap:10px; padding:11px 13px; border:1px solid var(--line-2); border-radius:8px; margin-bottom:8px; cursor:pointer; font-size:13.5px; }
+  .rule-event:hover{ border-color:#c5cef5; }
+  .re-check{ width:17px; height:17px; border:1.5px solid var(--line-2); border-radius:4px; flex-shrink:0; position:relative; }
+  .re-check.on{ background:var(--blue); border-color:var(--blue); }
+  .re-check.on::after{ content:'✓'; color:#fff; font-size:12px; position:absolute; left:2.5px; top:-1px; }
+
   /* 操作日志 */
   .log-filter{ display:flex; align-items:center; gap:16px 28px; margin-bottom:18px; flex-wrap:wrap; background:#fafbfc; border:1px solid var(--line); border-radius:10px; padding:18px 20px; }
   .lf-item{ display:flex; align-items:center; gap:9px; }
@@ -384,53 +415,26 @@
           <div class="page-head">
             <h1>违规提醒</h1>
             <span class="spacer"></span>
+            <button class="btn-primary" onclick="openRuleModal(null)">+ 新增提醒规则</button>
           </div>
 
-          <!-- 企微机器人 -->
-          <div class="wecom-card-wrap">
-            <div class="card-title"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--wecom)" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M8 12h.01M16 12h.01M9 16s1 1 3 1 3-1 3-1"/></svg>企业微信群机器人</div>
-            <div class="card-sub">在企业微信群聊中添加「群机器人」，复制其 Webhook 地址粘贴到这里。直播违规时，告警将推送到该群。</div>
-            <div class="field">
-              <label><span class="req">*</span>Webhook 地址</label>
-              <div class="input-row" style="display:flex; gap:10px;">
-                <input type="text" id="webhook" value="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=••••••••" style="flex:1;">
-                <button class="btn-ghost" onclick="testHook()">发送测试</button>
-              </div>
-              <div class="test-ok" id="testOk" style="display:none;">✓ 测试消息已发送，请在企微群中确认收到</div>
-            </div>
+          <div style="background:var(--blue-soft); border:1px solid #d7ddf9; border-left:3px solid var(--blue); border-radius:8px; padding:11px 14px; font-size:12.5px; color:#3a4a8c; margin-bottom:18px; line-height:1.7;">
+            <b>一个讲师只能绑定一个机器人</b>，确保同一讲师的违规不重复推送。
           </div>
 
-          <!-- 告警事件 -->
-          <div class="wecom-card-wrap">
-            <div class="card-title">触发告警的事件</div>
-            <div class="card-sub">勾选哪些事件需要推送企微告警。不同事件紧急程度不同，卡片样式与是否 @所有人 也不同。</div>
-            <div class="event-row on" id="ev1">
-              <label class="switch"><input type="checkbox" checked onchange="toggleEvent('ev1',this)"><span class="track"></span><span class="thumb"></span></label>
-              <div class="event-main">
-                <div class="event-name">直播中·实时质检违规</div>
-                <div class="event-desc">直播正在进行、内容已播出。AI 实时识别到违规时立即推送，卡片标红并 @所有人，便于运营第一时间决策是否处置。</div>
-              </div>
-            </div>
-            <div class="event-row on" id="ev2">
-              <label class="switch"><input type="checkbox" checked onchange="toggleEvent('ev2',this)"><span class="track"></span><span class="thumb"></span></label>
-              <div class="event-main">
-                <div class="event-name">报备·AI审核不通过</div>
-                <div class="event-desc">报备阶段、尚未开播。AI 判定报备材料不通过、转入待人工复核时推送，提醒审核员尽快处理。</div>
-              </div>
-            </div>
-            <div class="event-row" id="ev3">
-              <label class="switch"><input type="checkbox" onchange="toggleEvent('ev3',this)"><span class="track"></span><span class="thumb"></span></label>
-              <div class="event-main">
-                <div class="event-name">报备·人工复核驳回</div>
-                <div class="event-desc">人工复核驳回报备时推送，作为结果通知，提醒提交人修改后重新提交。</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 底部操作栏 -->
-          <div class="config-actions">
-            <button class="btn-cancel" onclick="cancelWecomConfig()">取消</button>
-            <button class="btn-primary" onclick="saveWecomConfig()">保存</button>
+          <div class="account-card">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:20%">机器人名称</th>
+                  <th style="width:22%">绑定讲师</th>
+                  <th style="width:24%">触发事件</th>
+                  <th style="width:10%">状态</th>
+                  <th style="width:24%">操作</th>
+                </tr>
+              </thead>
+              <tbody id="ruleTbody"></tbody>
+            </table>
           </div>
         </div>
 
@@ -617,6 +621,45 @@
     </div>
   </div>
 
+  <!-- 提醒规则 新建/编辑 弹窗 -->
+  <div class="mask" id="ruleMask">
+    <div class="modal" style="width:520px;">
+      <div class="modal-head">
+        <h3 id="ruleModalTitle">新增提醒规则</h3>
+        <span class="x" onclick="closeRuleModal()">×</span>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label><span class="req">*</span>机器人名称</label>
+          <input type="text" id="ruleName" placeholder="便于识别，如：华南风控群、重点盯防群">
+        </div>
+        <div class="field">
+          <label><span class="req">*</span>企业微信群机器人 Webhook</label>
+          <div style="display:flex; gap:10px;">
+            <input type="text" id="ruleWebhook" placeholder="粘贴企微群机器人 Webhook 地址" style="flex:1;">
+            <button class="btn-ghost" onclick="testRuleHook()">发送测试</button>
+          </div>
+          <div class="test-ok" id="ruleTestOk" style="display:none; font-size:12.5px; color:var(--green); margin-top:8px;">✓ 测试消息已发送，请在企微群确认</div>
+        </div>
+        <div class="field">
+          <label><span class="req">*</span>绑定讲师</label>
+          <div class="lect-picker" id="lectList"></div>
+          <div class="field-hint" id="lectHint">勾选该机器人负责推送的讲师。灰色为已被其他规则绑定的讲师，不可重复绑定。</div>
+        </div>
+        <div class="field">
+          <label><span class="req">*</span>触发事件</label>
+          <div class="rule-event" id="re1" onclick="toggleRuleEvent('re1')"><span class="re-check on"></span>直播中·实时质检违规</div>
+          <div class="rule-event" id="re2" onclick="toggleRuleEvent('re2')"><span class="re-check on"></span>报备·AI审核不通过</div>
+          <div class="rule-event" id="re3" onclick="toggleRuleEvent('re3')"><span class="re-check"></span>报备·人工复核驳回</div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-cancel" onclick="closeRuleModal()">取消</button>
+        <button class="btn-primary" onclick="saveRule()">确认</button>
+      </div>
+    </div>
+  </div>
+
 <script>
   // ================= 共享数据 =================
   const STREAM_ACCOUNTS = [
@@ -640,6 +683,7 @@
     document.getElementById('view-wecom').style.display = view === 'wecom' ? 'flex' : 'none';
     document.getElementById('view-log').style.display = view === 'log' ? 'block' : 'none';
     if(view==='log') renderLog();
+    if(view==='wecom') renderRules();
   }
 
 
@@ -1061,13 +1105,104 @@
   function toggleExpand(g){ expanded[g]=!expanded[g]; renderDetail(); }
 
 
-  // ================= 视图 3：违规提醒 =================
-  function testHook(){ document.getElementById('testOk').style.display=''; }
-  function toggleEvent(id,el){ document.getElementById(id).classList.toggle('on', el.checked); }
+  // ================= 视图 3：违规提醒（多机器人 / 多规则）=================
+  // 讲师库（mock）
+  const LECTURERS = ['mosin','老白','perry','龙龙','michelle','央视新闻','Mandy'];
+  const EVENT_META = { re1:'实时质检违规', re2:'AI审核不通过', re3:'人工复核驳回' };
+  // 规则：每条 = 机器人名 + webhook + 绑定讲师[] + 事件[] + 开关
+  let RULES = [
+    {id:'r1', name:'华南风控群', webhook:'https://qyapi.weixin.qq.com/...key=aaa', lecturers:['mosin','老白'], events:['re1','re2'], on:true},
+    {id:'r2', name:'重点盯防群', webhook:'https://qyapi.weixin.qq.com/...key=bbb', lecturers:['央视新闻'], events:['re1'], on:true},
+  ];
 
-  // 保存 / 取消
-  function saveWecomConfig(){ showToast('保存成功'); }
-  function cancelWecomConfig(){ showToast('已取消'); }
+  // 已被其他规则绑定的讲师（编辑时排除自己）
+  function boundLecturers(exceptId){
+    const s={};
+    RULES.forEach(r=>{ if(r.id!==exceptId) r.lecturers.forEach(l=> s[l]=r.name); });
+    return s;
+  }
+
+  function renderRules(){
+    const tb=document.getElementById('ruleTbody');
+    if(!RULES.length){ tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--ink-3);padding:40px;">暂无提醒规则，点击右上「新增提醒规则」创建</td></tr>'; return; }
+    tb.innerHTML = RULES.map((r,i)=>`
+      <tr>
+        <td><div class="rule-bot-name">${r.name}</div><div class="rule-bot-hook">${maskHook(r.webhook)}</div></td>
+        <td><div class="rule-lect-tags">${r.lecturers.map(l=>`<span class="rule-lect-tag">${l}</span>`).join('')||'<span style="color:var(--ink-3)">—</span>'}</div></td>
+        <td><div class="rule-evt-tags">${r.events.map(e=>`<span class="rule-evt-tag">${EVENT_META[e]}</span>`).join('')}</div></td>
+        <td><span class="rule-status ${r.on?'rule-on':'rule-off'}"><span class="rule-dot"></span>${r.on?'已开启':'已关闭'}</span></td>
+        <td class="op">
+          <a onclick="openRuleModal('${r.id}')">编辑</a>
+          <a onclick="toggleRule('${r.id}')">${r.on?'关闭':'开启'}</a>
+          <a onclick="testRuleById('${r.id}')">测试</a>
+          <a onclick="delRule('${r.id}')" style="color:var(--red);">删除</a>
+        </td>
+      </tr>`).join('');
+  }
+  function maskHook(h){ return h.length>34? h.slice(0,30)+'••••' : h; }
+  function toggleRule(id){ const r=RULES.find(x=>x.id===id); r.on=!r.on; renderRules(); showToast(r.on?'规则已开启':'规则已关闭'); }
+  function delRule(id){ if(confirm('确认删除该提醒规则？')){ RULES=RULES.filter(x=>x.id!==id); renderRules(); showToast('已删除'); } }
+  function testRuleById(id){ showToast('测试消息已发送'); }
+
+  // 规则弹窗
+  let ruleEditId=null, ruleLects=[], ruleEvents={re1:true,re2:true,re3:false};
+  function openRuleModal(id){
+    ruleEditId=id;
+    document.getElementById('ruleMask').classList.add('show');
+    document.getElementById('ruleTestOk').style.display='none';
+    if(id){
+      const r=RULES.find(x=>x.id===id);
+      document.getElementById('ruleModalTitle').textContent='编辑提醒规则';
+      document.getElementById('ruleName').value=r.name;
+      document.getElementById('ruleWebhook').value=r.webhook;
+      ruleLects=r.lecturers.slice();
+      ruleEvents={re1:r.events.includes('re1'), re2:r.events.includes('re2'), re3:r.events.includes('re3')};
+    }else{
+      document.getElementById('ruleModalTitle').textContent='新增提醒规则';
+      document.getElementById('ruleName').value='';
+      document.getElementById('ruleWebhook').value='';
+      ruleLects=[]; ruleEvents={re1:true,re2:true,re3:false};
+    }
+    renderLectPicker(); applyRuleEvents();
+  }
+  function closeRuleModal(){ document.getElementById('ruleMask').classList.remove('show'); }
+  function renderLectPicker(){
+    const bound=boundLecturers(ruleEditId);
+    document.getElementById('lectList').innerHTML = LECTURERS.map(l=>{
+      const isBound = bound[l] && !ruleLects.includes(l);
+      const on = ruleLects.includes(l);
+      return `<div class="lect-item ${on?'on':''} ${isBound?'disabled':''}" ${isBound?'':`onclick="toggleLect('${l}')"`}>
+        <span class="lect-check"></span>${l}
+        ${isBound?`<span class="lect-bound">已绑定「${bound[l]}」</span>`:''}
+      </div>`;
+    }).join('');
+  }
+  function toggleLect(l){
+    const i=ruleLects.indexOf(l); if(i>=0)ruleLects.splice(i,1); else ruleLects.push(l);
+    renderLectPicker();
+  }
+  function toggleRuleEvent(id){ ruleEvents[id]=!ruleEvents[id]; applyRuleEvents(); }
+  function applyRuleEvents(){
+    ['re1','re2','re3'].forEach(id=>{
+      document.querySelector('#'+id+' .re-check').classList.toggle('on', ruleEvents[id]);
+    });
+  }
+  function testRuleHook(){ document.getElementById('ruleTestOk').style.display=''; }
+  function saveRule(){
+    const name=document.getElementById('ruleName').value.trim()||'未命名机器人';
+    const webhook=document.getElementById('ruleWebhook').value.trim()||'https://qyapi.weixin.qq.com/...';
+    const events=['re1','re2','re3'].filter(e=>ruleEvents[e]);
+    if(!ruleLects.length){ showToast('请至少绑定一个讲师'); return; }
+    if(!events.length){ showToast('请至少选择一个触发事件'); return; }
+    if(ruleEditId){
+      const r=RULES.find(x=>x.id===ruleEditId);
+      Object.assign(r,{name,webhook,lecturers:ruleLects.slice(),events});
+    }else{
+      RULES.push({id:'r'+Date.now(), name, webhook, lecturers:ruleLects.slice(), events, on:true});
+    }
+    closeRuleModal(); renderRules(); showToast('保存成功');
+  }
+
   let toastTimer = null;
   function showToast(msg){
     let t = document.getElementById('globalToast');
@@ -1147,6 +1282,7 @@
   renderRoleList();
   renderDetail();
   setPreview('high');
+  renderRules();
   switchView('account');
 </script>
 </body>
