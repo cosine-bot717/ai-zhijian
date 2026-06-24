@@ -36,7 +36,7 @@
   .nav-row{ display:flex; }
   .nav-row .nav-item{ flex:1; }
 
-  .main{ flex:1; padding:24px 30px; }
+  .main{ flex:1; padding:24px 30px; overflow-x: auto; }
   
   /* 通用组件 */
   .page-head{ display:flex; align-items:center; margin-bottom:18px; }
@@ -53,7 +53,39 @@
   /* ================= 视图 1：账号管理 ================= */
   .note{ background:#f9fafc; border:1px solid var(--line); border-radius:8px; padding:11px 14px; font-size:12.5px; color:var(--ink-3); margin-bottom:18px; line-height:1.7; }
   .note b{ color:var(--ink-2); font-weight:600; }
-  .account-card{ background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+  
+  /* 新版左右分栏布局 */
+  .account-layout { display: flex; gap: 20px; align-items: flex-start; min-width: 960px; }
+  .org-tree-panel { width: 260px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 18px 14px; flex-shrink: 0; min-height: 600px; }
+  .member-list-panel { flex: 1; background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; min-height: 600px; }
+
+  .tree-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 0 4px; }
+  .tree-header .th-title { font-weight: 600; font-size: 15px; }
+  .tree-header .btn-ghost { padding: 5px 10px; font-size: 12px; }
+
+  .tree-node { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13.5px; color: var(--ink-2); transition: .15s; margin-bottom: 2px; }
+  .tree-node:hover { background: #f5f6f8; }
+  .tree-node.active { background: var(--blue-soft); color: var(--blue); font-weight: 500; }
+  .folder-ic { width: 16px; height: 16px; fill: #b0b5bf; flex-shrink: 0; }
+  .tree-node.active .folder-ic { fill: var(--blue); }
+  .tree-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tree-ops { display: none; gap: 10px; color: var(--ink-3); font-size: 12px; }
+  .tree-node:hover .tree-ops { display: flex; }
+  .tree-ops span { cursor: pointer; font-weight: bold; }
+  .tree-ops span:hover { color: var(--blue); }
+
+  .ml-header { padding: 16px 20px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+  .ml-header h3 { font-size: 16px; font-weight: 600; }
+
+  .ml-filters { display:flex; gap:12px; padding:14px 20px; border-bottom:1px solid var(--line); background:#fafbfc; align-items:center; flex-wrap:wrap; }
+  .ml-filters .f-search { position:relative; flex:1; min-width:220px; max-width:320px; }
+  .ml-filters .f-search input { width:100%; height:34px; padding:0 12px 0 32px; border:1px solid var(--line-2); border-radius:6px; font-size:13px; outline:none; background:#fff; color:var(--ink); }
+  .ml-filters .f-search input:focus { border-color:var(--blue); }
+  .ml-filters .f-search svg { position:absolute; left:10px; top:9px; width:14px; height:14px; }
+  .ml-filters select { height:34px; padding:0 28px 0 12px; border:1px solid var(--line-2); border-radius:6px; font-size:13px; background:#fff; color:var(--ink); cursor:pointer; outline:none; }
+  .ml-filters select:focus { border-color:var(--blue); }
+  .ml-filters .f-label { font-size:13px; color:var(--ink-3); }
+
   .account-card table{ width:100%; border-collapse:collapse; }
   .account-card thead th{ text-align:left; font-size:13px; color:var(--ink-3); font-weight:500; padding:16px 22px; background:#fafbfc; border-bottom:1px solid var(--line); }
   .account-card tbody td{ padding:18px 22px; border-bottom:1px solid var(--line); font-size:14px; vertical-align:middle; }
@@ -99,6 +131,17 @@
   .rr-sub{ font-size:12px; color:var(--ink-3); }
   .modal-foot{ padding:16px 26px 22px; display:flex; justify-content:flex-end; gap:12px; border-top:1px solid var(--line); }
 
+  .dept-picker{ width:100%; padding:10px 12px; border:1px solid var(--line-2); border-radius:8px; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:space-between; background:#fff; }
+  .dept-picker:hover{ border-color:#c5cef5; }
+  .dept-dropdown{ border:1px solid var(--line-2); border-radius:8px; margin-top:6px; padding:6px; max-height:230px; overflow-y:auto; box-shadow:0 6px 20px rgba(0,0,0,.08); }
+  .dept-opt{ display:flex; align-items:center; gap:8px; padding:9px 10px; border-radius:7px; cursor:pointer; font-size:13.5px; color:var(--ink-2); }
+  .dept-opt:hover{ background:#f5f6f8; }
+  .dept-opt.sel{ background:var(--blue-soft); color:var(--blue); font-weight:500; }
+  .dept-opt.child{ padding-left:28px; }
+  .dept-opt.child2{ padding-left:46px; }
+  .dept-opt .d-count{ margin-left:auto; font-size:11.5px; color:var(--ink-3); }
+
+
   /* ================= 视图 2：角色权限 ================= */
   .role-layout{ display:flex; background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; min-height:620px; }
   .role-list{ width:240px; border-right:1px solid var(--line); padding:16px 0; flex-shrink:0; }
@@ -122,17 +165,6 @@
   .section-title{ font-size:15px; font-weight:600; margin-bottom:6px; }
   .section-sub{ font-size:12.5px; color:var(--ink-3); margin-bottom:14px; line-height:1.6; }
 
-  /* 操作权限 grid */
-  .op-grid{ display:flex; gap:12px; margin-bottom:30px; }
-  .op-card{ flex:1; border:1px solid var(--line-2); border-radius:10px; padding:14px 16px; cursor:pointer; }
-  .op-card.on{ border-color:var(--blue); background:var(--blue-soft); }
-  .op-card .op-top{ display:flex; align-items:center; gap:9px; margin-bottom:6px; }
-  .op-check{ width:17px; height:17px; border:1.5px solid var(--line-2); border-radius:4px; flex-shrink:0; position:relative; background:#fff; }
-  .op-card.on .op-check{ background:var(--blue); border-color:var(--blue); }
-  .op-card.on .op-check::after{ content:'✓'; color:#fff; font-size:12px; position:absolute; left:2.5px; top:-1px; }
-  .op-name{ font-size:14px; font-weight:600; }
-  .op-desc{ font-size:12px; color:var(--ink-3); line-height:1.6; }
-  .base-note{ font-size:12.5px; color:var(--ink-2); background:#f9fafc; border:1px solid var(--line); border-radius:8px; padding:10px 13px; margin-bottom:18px; }
 
   /* 菜单树 */
   .menu-tree{ border:1px solid var(--line); border-radius:10px; padding:8px 0; }
@@ -152,7 +184,7 @@
   .mc-item:hover{ background:#fafbfc; }
 
   .ro-banner{ background:#f9fafc; border:1px solid var(--line); border-radius:8px; padding:10px 14px; font-size:12.5px; color:var(--ink-3); margin-bottom:18px; }
-  .detail-readonly .op-card, .detail-readonly .mg-parent, .detail-readonly .mc-item{ pointer-events:none; opacity:.7; }
+  .detail-readonly .mg-parent, .detail-readonly .mc-item{ pointer-events:none; opacity:.7; }
 
   /* ================= 视图 3：违规提醒 ================= */
   #view-wecom { gap:24px; align-items:flex-start; }
@@ -185,26 +217,6 @@
   .lv-low{ background:#eef0f3; color:var(--ink-2); }
   .event-desc{ font-size:12.5px; color:var(--ink-3); margin-top:5px; line-height:1.6; }
 
-  /* 账号选择组件共享 (视图1/3) */
-  .acc-list, .acc-grid{ margin-top:2px; }
-  .acc-pick{ display:none; }
-  .acc-pick.show{ display:block; }
-  .acc-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-  .acc-item{ display:flex; align-items:center; gap:9px; padding:10px 12px; border:1px solid var(--line); border-radius:8px; margin-bottom:7px; cursor:pointer; font-size:13.5px; }
-  .acc-grid .acc-item{ margin-bottom:0; }
-  .acc-item:hover{ background:#f7f8fa; }
-  .acc-check{ width:16px; height:16px; border:1.5px solid var(--line-2); border-radius:4px; flex-shrink:0; position:relative; }
-  .acc-item.on .acc-check{ background:var(--blue); border-color:var(--blue); }
-  .acc-item.on .acc-check::after{ content:'✓'; color:#fff; font-size:11px; position:absolute; left:2px; top:-2px; }
-  .acc-plat{ margin-left:auto; font-size:11.5px; color:var(--ink-3); }
-
-  .seg{ display:inline-flex; background:#f5f6f8; border:1px solid var(--line-2); border-radius:8px; padding:3px; margin-bottom:12px; }
-  .seg-item{ padding:6px 15px; font-size:13px; color:var(--ink-2); border-radius:6px; cursor:pointer; }
-  .seg-item.active{ background:#fff; color:var(--blue); font-weight:500; box-shadow:0 1px 2px rgba(0,0,0,.06); }
-  
-  .freq-row{ display:flex; align-items:center; gap:10px; font-size:13.5px; color:var(--ink-2); }
-  .freq-row input[type=number]{ width:64px; flex:none; text-align:center; padding:9px 12px; border:1px solid var(--line-2); border-radius:8px; font-size:13.5px; outline:none; }
-
   /* 企微预览卡片 */
   .preview-sticky{ position:sticky; top:24px; }
   .preview-label{ font-size:12.5px; color:var(--ink-3); margin-bottom:10px; display:flex; align-items:center; gap:6px; }
@@ -219,11 +231,37 @@
   .wc-key{ color:var(--ink-3); width:62px; flex-shrink:0; }
   .wc-val{ color:var(--ink); flex:1; }
   .wc-val.hit{ color:var(--red); }
-  .wc-foot{ border-top:1px solid #f0f0f0; padding:11px 15px; }
-  .wc-link{ color:var(--blue); font-size:13px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; }
   .preview-switcher{ display:flex; gap:6px; margin-top:14px; }
   .pv-btn{ flex:1; padding:7px; font-size:12px; text-align:center; border:1px solid var(--line-2); border-radius:7px; cursor:pointer; color:var(--ink-2); background:#fff; }
   .pv-btn.active{ border-color:var(--blue); color:var(--blue); background:var(--blue-soft); }
+
+  /* 操作日志 */
+  .log-filter{ display:flex; align-items:center; gap:16px 28px; margin-bottom:18px; flex-wrap:wrap; background:#fafbfc; border:1px solid var(--line); border-radius:10px; padding:18px 20px; }
+  .lf-item{ display:flex; align-items:center; gap:9px; }
+  .lf-label{ font-size:13.5px; color:var(--ink-2); white-space:nowrap; }
+  .log-filter input[type=text]{ padding:8px 12px; border:1px solid var(--line-2); border-radius:8px; font-size:13.5px; outline:none; width:190px; }
+  .log-filter input:focus{ border-color:var(--blue); }
+  .log-filter select{ padding:8px 30px 8px 12px; border:1px solid var(--line-2); border-radius:8px; font-size:13.5px; outline:none; background:#fff; appearance:none; min-width:150px; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%238a909e' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>"); background-repeat:no-repeat; background-position:right 10px center; cursor:pointer; }
+  .log-acc-name{ font-weight:600; color:var(--ink); font-size:13.5px; }
+  .log-acc-phone{ font-size:12px; color:var(--ink-3); margin-top:3px; display:flex; align-items:center; gap:5px; }
+  .log-module{ font-size:13.5px; color:var(--ink-2); }
+  .log-type-pill{ font-size:12px; padding:2px 10px; border-radius:5px; display:inline-block; }
+  .lt-新增{ background:var(--green-soft); color:var(--green); }
+  .lt-修改{ background:var(--blue-soft); color:var(--blue); }
+  .lt-删除{ background:#fdecec; color:var(--red); }
+  .lt-配置{ background:#fdf3e3; color:#b9770f; }
+  .log-ip{ font-size:13px; color:var(--ink-2); font-variant-numeric:tabular-nums; }
+  .log-detail{ font-size:13px; color:var(--ink-2); line-height:1.6; }
+
+  /* 操作日志表格 —— 规整 */
+  .log-card{ background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+  .log-table{ width:100%; border-collapse:collapse; table-layout:fixed; }
+  .log-table thead th{ text-align:left; font-size:13px; color:var(--ink-3); font-weight:500; padding:15px 20px; background:#fafbfc; border-bottom:1px solid var(--line); white-space:nowrap; }
+  .log-table tbody td{ padding:18px 20px; border-bottom:1px solid var(--line); font-size:13.5px; vertical-align:top; }
+  .log-table tbody tr:last-child td{ border-bottom:none; }
+  .log-table tbody tr:hover{ background:#fafbfc; }
+  .log-table td:first-child{ color:var(--ink-2); font-variant-numeric:tabular-nums; }
+  .log-detail{ word-break:break-word; }
 </style>
 </head>
 <body>
@@ -255,12 +293,12 @@
       <div class="nav-group">
         <div class="nav-title"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>系统设置</div>
         <div class="nav-row">
-          <span class="nav-item active" id="nav-account" onclick="switchView('account')">帐号管理</span>
+          <span class="nav-item active" id="nav-account" onclick="switchView('account')">账号管理</span>
           <span class="nav-item" id="nav-role" onclick="switchView('role')">角色权限</span>
         </div>
         <div class="nav-row">
           <span class="nav-item" id="nav-wecom" onclick="switchView('wecom')">违规提醒</span>
-          <span class="nav-item">AI模型配置</span>
+          <span class="nav-item" id="nav-log" onclick="switchView('log')">操作日志</span>
         </div>
       </div>
     </aside>
@@ -272,24 +310,50 @@
         <div class="page-head">
           <h1>账号管理</h1>
           <span class="spacer"></span>
-          <button class="btn-primary" onclick="openModal()">+ 添加账号</button>
         </div>
-        <div class="note">
-          <b>角色</b>决定该账号能用哪些功能（在「角色权限」中维护）；<b>数据范围</b>决定该账号能看到哪些数据，与角色相互独立、按账号单独配置。本租户内账号仅能看到本租户数据。
-        </div>
-        <div class="account-card">
-          <table>
-            <thead>
-              <tr>
-                <th style="width:20%">用户名</th>
-                <th style="width:13%">角色</th>
-                <th style="width:37%">数据范围</th>
-                <th style="width:15%">创建时间</th>
-                <th style="width:15%">操作</th>
-              </tr>
-            </thead>
-            <tbody id="tbody"></tbody>
-          </table>
+
+        <div class="account-layout">
+          <!-- 左侧：组织架构树 -->
+          <div class="org-tree-panel">
+            <div class="tree-header">
+              <span class="th-title">组织架构</span>
+              <button class="btn-ghost" onclick="openDeptModal(null, curSelectedDept)">+ 新建</button>
+            </div>
+            <div id="orgTreeContainer"></div>
+          </div>
+
+          <!-- 右侧：成员列表 -->
+          <div class="member-list-panel account-card">
+            <div class="ml-header">
+              <h3 id="currentDeptTitle">所有员工</h3>
+              <button class="btn-primary" onclick="openModal()">+ 添加账号</button>
+            </div>
+            <div class="ml-filters">
+              <div class="f-search">
+                <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#8a909e" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#8a909e" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <input type="text" id="filterKw" placeholder="搜索用户名或手机号" oninput="renderTable()">
+              </div>
+              <select id="filterRole" onchange="renderTable()">
+                <option value="">全部角色</option>
+                <option value="submit">提交员</option>
+                <option value="review">审核员</option>
+                <option value="super">超级管理员</option>
+              </select>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:20%">用户名</th>
+                  <th style="width:14%">角色</th>
+                  <th style="width:22%">所属部门</th>
+                  <th style="width:20%">数据范围</th>
+                  <th style="width:14%">创建时间</th>
+                  <th style="width:10%">操作</th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -341,45 +405,23 @@
             <div class="event-row on" id="ev1">
               <label class="switch"><input type="checkbox" checked onchange="toggleEvent('ev1',this)"><span class="track"></span><span class="thumb"></span></label>
               <div class="event-main">
-                <div class="event-name">直播中·实时质检违规 <span class="lv-tag lv-high">高优先级</span></div>
+                <div class="event-name">直播中·实时质检违规</div>
                 <div class="event-desc">直播正在进行、内容已播出。AI 实时识别到违规时立即推送，卡片标红并 @所有人，便于运营第一时间决策是否处置。</div>
               </div>
             </div>
             <div class="event-row on" id="ev2">
               <label class="switch"><input type="checkbox" checked onchange="toggleEvent('ev2',this)"><span class="track"></span><span class="thumb"></span></label>
               <div class="event-main">
-                <div class="event-name">报备·AI审核不通过 <span class="lv-tag lv-mid">中优先级</span></div>
+                <div class="event-name">报备·AI审核不通过</div>
                 <div class="event-desc">报备阶段、尚未开播。AI 判定报备材料不通过、转入待人工复核时推送，提醒审核员尽快处理。</div>
               </div>
             </div>
             <div class="event-row" id="ev3">
               <label class="switch"><input type="checkbox" onchange="toggleEvent('ev3',this)"><span class="track"></span><span class="thumb"></span></label>
               <div class="event-main">
-                <div class="event-name">报备·人工复核驳回 <span class="lv-tag lv-low">普通</span></div>
+                <div class="event-name">报备·人工复核驳回</div>
                 <div class="event-desc">人工复核驳回报备时推送，作为结果通知，提醒提交人修改后重新提交。</div>
               </div>
-            </div>
-          </div>
-
-          <!-- 生效范围 -->
-          <div class="wecom-card-wrap">
-            <div class="card-title">告警生效的主播账号</div>
-            <div class="card-sub">指定告警对哪些主播账号生效，避免无关账号刷屏。</div>
-            <div class="seg">
-              <span class="seg-item active" id="segAll" onclick="setWecomScope('all')">全部主播账号</span>
-              <span class="seg-item" id="segSpec" onclick="setWecomScope('spec')">指定主播账号</span>
-            </div>
-            <div class="acc-pick" id="accPick">
-              <div class="acc-grid" id="accGrid"></div>
-            </div>
-          </div>
-
-          <!-- 限频 -->
-          <div class="wecom-card-wrap">
-            <div class="card-title">防刷屏设置</div>
-            <div class="card-sub">同一场直播持续违规时，聚合推送，避免短时间内大量重复告警。</div>
-            <div class="freq-row">
-              同一主播账号，每 <input type="number" value="5" min="1"> 分钟内最多推送 1 条，期间累计违规次数合并显示。
             </div>
           </div>
         </div>
@@ -400,6 +442,63 @@
         </div>
       </div>
 
+      <!-- ================= 视图 4：操作日志 ================= -->
+      <div id="view-log" style="display:none;">
+        <div class="page-head"><h1>操作日志</h1></div>
+        <div class="note">
+          记录管理与配置类操作的留痕，用于追溯：谁、在什么时间、从哪个 IP、在哪个模块做了什么改动。是否可见由「角色权限」中的菜单权限控制。
+        </div>
+        <div class="log-filter">
+          <div class="lf-item">
+            <span class="lf-label">操作人</span>
+            <input type="text" id="logUser" placeholder="操作人姓名或手机号" oninput="renderLog()">
+          </div>
+          <div class="lf-item">
+            <span class="lf-label">操作模块</span>
+            <select id="logModule" onchange="renderLog()">
+              <option value="all">请选择</option>
+              <option value="系统设置/帐号管理">系统设置/帐号管理</option>
+              <option value="系统设置/角色权限">系统设置/角色权限</option>
+              <option value="系统设置/违规提醒">系统设置/违规提醒</option>
+              <option value="规则中心/敏感词库">规则中心/敏感词库</option>
+              <option value="规则中心/策略列表">规则中心/策略列表</option>
+            </select>
+          </div>
+          <div class="lf-item">
+            <span class="lf-label">操作类型</span>
+            <select id="logType" onchange="renderLog()">
+              <option value="all">全部</option>
+              <option value="新增">新增</option>
+              <option value="修改">修改</option>
+              <option value="删除">删除</option>
+              <option value="配置">配置</option>
+            </select>
+          </div>
+          <div class="lf-item">
+            <span class="lf-label">操作时间</span>
+            <input type="text" value="2026-06-17" readonly style="width:104px;"> 至 <input type="text" value="2026-06-23" readonly style="width:104px;">
+          </div>
+          <span style="flex:1;"></span>
+          <button class="btn-primary" onclick="renderLog()" style="padding:8px 20px;">筛选</button>
+          <span onclick="resetLog()" style="color:var(--blue);font-size:13.5px;cursor:pointer;">重置筛选条件</span>
+        </div>
+        <div class="card log-card">
+          <table class="log-table">
+            <thead>
+              <tr>
+                <th style="width:14%">操作时间</th>
+                <th style="width:15%">操作账号</th>
+                <th style="width:17%">操作模块</th>
+                <th style="width:9%">操作类型</th>
+                <th style="width:12%">操作人IP</th>
+                <th style="width:33%">操作内容</th>
+              </tr>
+            </thead>
+            <tbody id="logTbody"></tbody>
+          </table>
+        </div>
+      </div>
+
     </main>
   </div>
 
@@ -408,7 +507,7 @@
     <div class="modal">
       <div class="modal-head">
         <h3 id="modalTitle">添加账号</h3>
-        <span class="x" onclick="closeModal()">×</span>
+        <span class="x" onclick="cancelModal()">×</span>
       </div>
       <div class="modal-body">
         <div class="field">
@@ -426,30 +525,86 @@
             <option value="review">审核员</option>
             <option value="super">超级管理员</option>
           </select>
-          <div class="field-hint">角色只决定功能权限。如需新建角色，请前往「角色权限」。</div>
         </div>
 
-        <div class="scope-block">
-          <div class="sb-head"><span class="dot"></span>数据范围</div>
-          <div class="sb-desc">控制该账号能看到哪些数据，与所选角色无关，按账号单独设置。</div>
-          <div class="radio-row sel" id="scAll" onclick="setAccountScope('all')">
-            <span class="radio-dot"></span>
-            <span class="rr-txt">本租户全部数据<div class="rr-sub">能看到本租户内所有主播账号的报备与直播</div></span>
+        <div class="field">
+          <label><span class="req">*</span>所属部门</label>
+          <div class="dept-picker" id="deptPicker" onclick="toggleDeptDropdown(event)">
+            <span id="deptPickerText">请选择部门</span>
+            <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4" stroke="#8a909e" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
-          <div class="radio-row" id="scSpec" onclick="setAccountScope('spec')">
+          <div class="dept-dropdown" id="deptDropdown" style="display:none;"></div>
+        </div>
+
+        <div class="field">
+          <label><span class="req">*</span>数据范围</label>
+          <div class="radio-row sel" id="scDept" onclick="setDataScope('dept')">
             <span class="radio-dot"></span>
-            <span class="rr-txt">指定主播账号<div class="rr-sub">只能看到选定主播账号的数据，用于团队分工</div></span>
+            <span class="rr-txt">本部门全部</span>
           </div>
-          <div class="acc-list" id="accList" style="display:none;"></div>
-          <div class="radio-row" id="scSelf" onclick="setAccountScope('self')">
+          <div class="radio-row" id="scSelf" onclick="setDataScope('self')">
             <span class="radio-dot"></span>
-            <span class="rr-txt">仅本人提交<div class="rr-sub">只能看到自己提交的报备，适合提交员</div></span>
+            <span class="rr-txt">仅本人</span>
           </div>
         </div>
       </div>
       <div class="modal-foot">
-        <button class="btn-cancel" onclick="closeModal()">取消</button>
+        <button class="btn-cancel" onclick="cancelModal()">取消</button>
         <button class="btn-primary" onclick="closeModal()">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 弹窗：重置密码 ================= -->
+  <div class="mask" id="resetPwdMask">
+    <div class="modal" style="width:420px;">
+      <div class="modal-head">
+        <h3>重置密码</h3>
+        <span class="x" onclick="closeResetPwdModal()">×</span>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label>账号</label>
+          <input type="text" id="resetPwdUser" readonly style="background:#f5f6f8;color:var(--ink-3);cursor:not-allowed;">
+        </div>
+        <div class="field">
+          <label><span class="req">*</span>新密码</label>
+          <input type="password" placeholder="请输入新密码" id="inpNewPwd">
+          <div class="field-hint">密码长度 8-20 位，建议包含字母与数字。</div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-cancel" onclick="closeResetPwdModal()">取消</button>
+        <button class="btn-primary" onclick="confirmResetPwd()">确认重置</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 部门 新建/编辑 弹窗 -->
+  <div class="mask" id="deptMask">
+    <div class="modal" style="width:420px;">
+      <div class="modal-head">
+        <h3 id="deptModalTitle">新建部门</h3>
+        <span class="x" onclick="closeDeptModal()">×</span>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label><span class="req">*</span>上级部门</label>
+          <select id="deptParent"></select>
+          <div class="field-hint">选「无」为一级部门（分部）；选某个部门则成为其下级。上级部门可见本部门及所有下级数据。</div>
+        </div>
+        <div class="field">
+          <label><span class="req">*</span>部门名称</label>
+          <input type="text" id="deptName" placeholder="如：华南分部、抖音组">
+        </div>
+        <div class="field">
+          <label>备注</label>
+          <textarea id="deptRemark" rows="3" placeholder="选填" style="width:100%;padding:10px 12px;border:1px solid var(--line-2);border-radius:8px;font-size:14px;outline:none;resize:vertical;font-family:inherit;"></textarea>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-cancel" onclick="closeDeptModal()">取消</button>
+        <button class="btn-primary" onclick="saveDept()">确认</button>
       </div>
     </div>
   </div>
@@ -470,10 +625,13 @@
     document.getElementById('nav-account').classList.toggle('active', view === 'account');
     document.getElementById('nav-role').classList.toggle('active', view === 'role');
     document.getElementById('nav-wecom').classList.toggle('active', view === 'wecom');
+    document.getElementById('nav-log').classList.toggle('active', view === 'log');
 
     document.getElementById('view-account').style.display = view === 'account' ? 'block' : 'none';
     document.getElementById('view-role').style.display = view === 'role' ? 'block' : 'none';
     document.getElementById('view-wecom').style.display = view === 'wecom' ? 'flex' : 'none';
+    document.getElementById('view-log').style.display = view === 'log' ? 'block' : 'none';
+    if(view==='log') renderLog();
   }
 
 
@@ -484,78 +642,326 @@
     submit:{label:'提交员', cls:'role-submit'},
   };
 
+  // 组织架构
+  const DEPTS = [
+    { id:'d2', name:'华南分部', remark:'华南地区', created:'2026-05-08 10:12', members:1, accounts:5, children:[
+      { id:'d2-1', name:'抖音组', remark:'', created:'2026-05-08 10:15', members:2, accounts:3, children:[] },
+      { id:'d2-2', name:'视频号组', remark:'', created:'2026-05-08 10:16', members:1, accounts:2, children:[] },
+    ]},
+    { id:'d1', name:'华东分部', remark:'华东地区', created:'2026-05-08 10:20', members:1, accounts:4, children:[
+      { id:'d1-1', name:'抖音组', remark:'', created:'2026-05-08 10:22', members:2, accounts:2, children:[] },
+      { id:'d1-2', name:'视频号组', remark:'', created:'2026-05-08 10:23', members:1, accounts:2, children:[] },
+    ]},
+  ];
+  function findDept(id, nodes=DEPTS){
+    if(!id) return null;
+    for(const n of nodes){ if(n.id===id) return n; const f=findDept(id,n.children); if(f) return f; }
+    return null;
+  }
+  function deptPath(id, nodes=DEPTS, trail=[]){
+    for(const n of nodes){
+      const t=[...trail,n.name];
+      if(n.id===id) return t.join(' / ');
+      const f=deptPath(id,n.children,t); if(f) return f;
+    }
+    return null;
+  }
+  function flattenDepts(nodes=DEPTS, lvl=0, arr=[]){
+    nodes.forEach(n=>{ arr.push({id:n.id,name:n.name,lvl}); flattenDepts(n.children||[],lvl+1,arr); });
+    return arr;
+  }
+
   const ACCOUNTS = [
-    {user:'xeadmin', sub:'系统管理员', role:'super', scope:{mode:'all',accounts:[]}, created:'2026-05-10'},
-    {user:'systemreviewer', sub:'', role:'review', scope:{mode:'spec',accounts:['mosin 小红书','mosin视频号推送','央视新闻']}, created:'2026-05-12'},
-    {user:'reviewer_dy', sub:'抖音组', role:'review', scope:{mode:'spec',accounts:['抖音号推送','yvon','每日财经AI电视']}, created:'2026-05-15'},
-    {user:'lead_submit', sub:'报备组主管', role:'submit', scope:{mode:'all',accounts:[]}, created:'2026-05-19'},
-    {user:'systemtest', sub:'', role:'submit', scope:{mode:'self',accounts:[]}, created:'2026-05-20'},
+    {user:'xeadmin', sub:'系统管理员', role:'super', deptId:null, dataScope:'all', created:'2026-05-10 09:20', phone:'13800000001', status:'enabled'},
+    {user:'director_hn', sub:'华南分部总监', role:'review', deptId:'d2', dataScope:'dept', created:'2026-05-11 14:05', phone:'13800000002', status:'enabled'},
+    {user:'reviewer_hn_dy', sub:'华南·抖音组', role:'review', deptId:'d2-1', dataScope:'self', created:'2026-05-12 10:42', phone:'13800000003', status:'enabled'},
+    {user:'lead_hn_submit', sub:'华南·抖音组组长', role:'submit', deptId:'d2-1', dataScope:'dept', created:'2026-05-15 16:18', phone:'13800000004', status:'disabled'},
+    {user:'submit_a', sub:'华南·抖音组 员工A', role:'submit', deptId:'d2-1', dataScope:'self', created:'2026-05-19 11:33', phone:'13800000005', status:'enabled'},
+    {user:'submit_hd', sub:'华东·视频号组 员工', role:'submit', deptId:'d1-2', dataScope:'self', created:'2026-05-20 17:38', phone:'13800000006', status:'enabled'},
   ];
 
-  function scopeLabel(s){
-    if(s.mode==='all') return {txt:'本租户全部数据', tags:null};
-    if(s.mode==='self') return {txt:'仅本人提交', tags:null};
-    return {txt:'指定主播账号 · '+s.accounts.length+' 个', tags:s.accounts};
+  function scopeTextOf(a){
+    if(a.role==='super' || a.dataScope==='all') return '全部数据';
+    return a.dataScope==='dept' ? '本部门全部' : '仅本人';
+  }
+
+  // ====== 树形组件交互 ======
+  let curSelectedDept = null;
+
+  function renderOrgTree() {
+    const container = document.getElementById('orgTreeContainer');
+    // SVG 图标定义
+    const folderIcon = `<svg class="folder-ic" viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>`;
+    
+    let html = `<div class="tree-node ${curSelectedDept===null?'active':''}" onclick="selectDept(null)">
+                  ${folderIcon} <span class="tree-name">所有员工</span>
+                </div>`;
+
+    const buildTree = (nodes, lvl) => {
+      nodes.forEach(n => {
+        html += `<div class="tree-node ${curSelectedDept===n.id?'active':''}" style="padding-left:${12 + lvl*16}px" onclick="selectDept('${n.id}')">
+                   ${folderIcon}
+                   <span class="tree-name">${n.name}</span>
+                   <div class="tree-ops" onclick="event.stopPropagation()">
+                      <span onclick="openDeptModal('${n.id}', null)">✎</span>
+                      <span onclick="openDeptModal(null, '${n.id}')">➕</span>
+                   </div>
+                 </div>`;
+        if(n.children && n.children.length) buildTree(n.children, lvl+1);
+      });
+    };
+    buildTree(DEPTS, 1);
+    container.innerHTML = html;
+  }
+
+  function selectDept(id) {
+    curSelectedDept = id;
+    renderOrgTree();
+    renderTable();
+    const d = findDept(id);
+    document.getElementById('currentDeptTitle').textContent = d ? d.name : '所有员工';
   }
 
   function renderTable(){
-    document.getElementById('tbody').innerHTML = ACCOUNTS.map((a,i)=>{
+    let validIds = null;
+    if (curSelectedDept !== null) {
+      validIds = [curSelectedDept];
+      const d = findDept(curSelectedDept);
+      if (d) {
+        const sub = flattenDepts(d.children || []);
+        validIds.push(...sub.map(x => x.id));
+      }
+    }
+
+    // 顶部筛选条件
+    const kwEl = document.getElementById('filterKw');
+    const roleEl = document.getElementById('filterRole');
+    const kw = kwEl ? kwEl.value.trim().toLowerCase() : '';
+    const fRole = roleEl ? roleEl.value : '';
+
+    const filtered = ACCOUNTS.filter(a => {
+      // 左侧部门联动筛选（保持原逻辑）
+      if (validIds !== null && !validIds.includes(a.deptId)) return false;
+      // 角色筛选
+      if (fRole && a.role !== fRole) return false;
+      // 关键词：用户名 或 手机号
+      if (kw) {
+        const u = (a.user || '').toLowerCase();
+        const p = (a.phone || '').toLowerCase();
+        if (!u.includes(kw) && !p.includes(kw)) return false;
+      }
+      return true;
+    });
+
+    document.getElementById('tbody').innerHTML = filtered.length ? filtered.map((a,i)=>{
       const r = ROLE_META[a.role];
-      const sl = scopeLabel(a.scope);
-      let scopeCell = `<span class="scope-text">${sl.txt}</span>`;
-      if(sl.tags) scopeCell += `<div class="scope-tags">${sl.tags.map(t=>`<span class="scope-tag">${t}</span>`).join('')}</div>`;
+      const deptTxt = a.deptId ? deptPath(a.deptId) : '<span class="scope-text">无（不参与隔离）</span>';
       return `<tr>
-        <td><div class="uname">${a.user}</div>${a.sub?`<div class="usub">${a.sub}</div>`:''}</td>
+        <td><div class="uname">${a.user}</div></td>
         <td><span class="role-pill ${r.cls}">${r.label}</span></td>
-        <td>${scopeCell}</td>
+        <td><span class="scope-text">${deptTxt}</span></td>
+        <td><span class="scope-text">${scopeTextOf(a)}</span></td>
         <td><span class="scope-text">${a.created}</span></td>
-        <td class="op"><a onclick="openModal(${i})">编辑</a><a>重置密码</a></td>
+        <td class="op"><a onclick="openModal(${ACCOUNTS.indexOf(a)})">编辑</a><a onclick="openResetPwdModal('${a.user}')">重置密码</a></td>
       </tr>`;
-    }).join('');
+    }).join('') : `<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--ink-3);">该部门下暂无成员</td></tr>`;
   }
 
-  let editIdx = -1, curMode='all', curAccounts=[];
+  // 部门 新建/编辑
+  let deptEditId=null, deptParentPreset=null;
+  function removeDeptNode(id, nodes=DEPTS){
+    for(let i=0;i<nodes.length;i++){
+      if(nodes[i].id===id){ nodes.splice(i,1); return true; }
+      if(removeDeptNode(id, nodes[i].children||[])) return true;
+    }
+    return false;
+  }
+  function openDeptModal(editId, parentId){
+    deptEditId=editId; deptParentPreset=parentId;
+    document.getElementById('deptMask').classList.add('show');
+    document.getElementById('deptModalTitle').textContent = editId?'编辑部门':(parentId?'新建子部门':'新建部门');
+    const cur = editId?findDept(editId):null;
+    document.getElementById('deptName').value = cur?cur.name:'';
+    document.getElementById('deptRemark').value = cur?(cur.remark||''):'';
+    // 上级部门下拉
+    const sel=document.getElementById('deptParent');
+    let opts='<option value="">无（一级部门）</option>';
+    flattenDepts().forEach(d=>{
+      if(editId && d.id===editId) return; // 编辑时不能选自己作上级
+      opts+=`<option value="${d.id}">${'　'.repeat(d.lvl)}${d.name}</option>`;
+    });
+    sel.innerHTML=opts;
+    // 预选上级
+    if(editId){ const p=findParentId(editId); sel.value=p||''; }
+    else if(parentId){ sel.value=parentId; }
+    else sel.value='';
+  }
+  function findParentId(id, nodes=DEPTS){
+    for(const n of nodes){
+      if((n.children||[]).some(c=>c.id===id)) return n.id;
+      const f=findParentId(id, n.children||[]); if(f) return f;
+    }
+    return null;
+  }
+  function closeDeptModal(){ document.getElementById('deptMask').classList.remove('show'); }
+  function saveDept(){
+    const name=document.getElementById('deptName').value.trim()||'未命名部门';
+    const remark=document.getElementById('deptRemark').value.trim();
+    const parentId=document.getElementById('deptParent').value;
+    if(deptEditId){
+      const d=findDept(deptEditId); if(d){ d.name=name; d.remark=remark; }
+    }else{
+      const now=new Date();
+      const ts=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      const node={id:'dept'+Date.now(), name, remark, created:ts, members:0, accounts:0, children:[]};
+      if(parentId){ const p=findDept(parentId); (p.children=p.children||[]).push(node); }
+      else DEPTS.push(node);
+    }
+    closeDeptModal(); renderOrgTree(); renderTable();
+  }
+
+  // 账号弹窗
+  let editIdx=-1, curDept=null, curScope='dept';
   function openModal(idx){
     document.getElementById('mask').classList.add('show');
+    document.getElementById('deptDropdown').style.display='none';
     if(typeof idx==='number'){
       editIdx=idx; const a=ACCOUNTS[idx];
       document.getElementById('modalTitle').textContent='编辑账号';
       document.getElementById('inpUser').value=a.user;
       document.getElementById('roleSelect').value=a.role;
-      curMode=a.scope.mode; curAccounts=a.scope.accounts.slice();
+      curDept=a.deptId; curScope=a.dataScope==='self'?'self':'dept';
     }else{
       editIdx=-1;
       document.getElementById('modalTitle').textContent='添加账号';
       document.getElementById('inpUser').value='';
       document.getElementById('roleSelect').value='submit';
-      curMode='all'; curAccounts=[];
+      // 默认填入当前选中的部门
+      curDept=curSelectedDept; curScope='dept';
     }
-    applyScopeUI();
+    updateDeptText(); renderDeptDropdown(); applyDataScopeUI();
   }
   function closeModal(){
+    const userVal = document.getElementById('inpUser').value.trim();
     if(editIdx>=0){
-      ACCOUNTS[editIdx].role=document.getElementById('roleSelect').value;
-      ACCOUNTS[editIdx].scope={mode:curMode, accounts:curMode==='spec'?curAccounts.slice():[]};
+      // 编辑模式：更新现有账号
+      if(userVal){
+        ACCOUNTS[editIdx].user = userVal;
+      }
+      ACCOUNTS[editIdx].role = document.getElementById('roleSelect').value;
+      ACCOUNTS[editIdx].deptId = curDept;
+      ACCOUNTS[editIdx].dataScope = ACCOUNTS[editIdx].role==='super' ? 'all' : curScope;
+      renderTable();
+    } else {
+      // 新增模式：校验用户名必填
+      if(!userVal){
+        alert('请输入用户名');
+        return;
+      }
+      const roleVal = document.getElementById('roleSelect').value;
+      const deptIdVal = (roleVal==='super') ? null : curDept;
+      const scopeVal = roleVal==='super' ? 'all' : curScope;
+      const today = new Date();
+      const pad = n => String(n).padStart(2,'0');
+      const created = today.getFullYear() + '-' + pad(today.getMonth()+1) + '-' + pad(today.getDate())
+        + ' ' + pad(today.getHours()) + ':' + pad(today.getMinutes());
+      const newAcc = {
+        user: userVal,
+        sub: deptIdVal ? deptPath(deptIdVal) + ' 新成员' : '系统管理员',
+        role: roleVal,
+        deptId: deptIdVal,
+        dataScope: scopeVal,
+        created: created,
+        phone: '',
+        status: 'enabled'
+      };
+      ACCOUNTS.push(newAcc);
+      // 若当前左侧树选中了特定部门，且新增员工不属于该部门范围，则自动切到「所有员工」视图以保证可见
+      if(curSelectedDept !== null){
+        const d = findDept(curSelectedDept);
+        const validIds = [curSelectedDept];
+        if(d){
+          flattenDepts(d.children||[]).forEach(x=>validIds.push(x.id));
+        }
+        if(!validIds.includes(deptIdVal)){
+          curSelectedDept = null;
+          document.getElementById('currentDeptTitle').textContent = '所有员工';
+          renderOrgTree();
+        }
+      }
       renderTable();
     }
+    // 关闭弹窗并重置表单
     document.getElementById('mask').classList.remove('show');
+    document.getElementById('inpUser').value = '';
+    document.getElementById('roleSelect').value = 'submit';
+    curDept = null; curScope = 'dept';
+    editIdx = -1;
+    updateDeptText(); applyDataScopeUI();
+  }
+  function cancelModal(){
+    // 取消/关闭：不写入数据，仅关闭弹窗并重置表单
+    document.getElementById('mask').classList.remove('show');
+    document.getElementById('inpUser').value = '';
+    document.getElementById('roleSelect').value = 'submit';
+    curDept = null; curScope = 'dept';
+    editIdx = -1;
+    updateDeptText(); applyDataScopeUI();
+  }
+  function setDataScope(s){ curScope=s; applyDataScopeUI(); }
+  function applyDataScopeUI(){
+    document.getElementById('scDept').classList.toggle('sel',curScope==='dept');
+    document.getElementById('scSelf').classList.toggle('sel',curScope==='self');
   }
 
-  function setAccountScope(m){ curMode=m; applyScopeUI(); }
-  function applyScopeUI(){
-    document.getElementById('scAll').classList.toggle('sel',curMode==='all');
-    document.getElementById('scSpec').classList.toggle('sel',curMode==='spec');
-    document.getElementById('scSelf').classList.toggle('sel',curMode==='self');
-    const list=document.getElementById('accList');
-    list.style.display = curMode==='spec'?'':'none';
-    if(curMode==='spec'){
-      list.innerHTML = STREAM_ACCOUNTS.map(a=>`<div class="acc-item ${curAccounts.includes(a.name)?'on':''}" onclick="toggleAccountAcc('${a.name}')">
-        <span class="acc-check"></span>${a.name}<span class="acc-plat">${a.plat}</span></div>`).join('');
-    }
+  // 重置密码弹窗
+  let resetPwdTargetUser = null;
+  function openResetPwdModal(user){
+    resetPwdTargetUser = user;
+    document.getElementById('resetPwdUser').value = user || '';
+    document.getElementById('inpNewPwd').value = '';
+    document.getElementById('resetPwdMask').classList.add('show');
   }
-  function toggleAccountAcc(name){
-    const i=curAccounts.indexOf(name); if(i>=0)curAccounts.splice(i,1); else curAccounts.push(name);
-    applyScopeUI();
+  function closeResetPwdModal(){
+    document.getElementById('resetPwdMask').classList.remove('show');
+    document.getElementById('inpNewPwd').value = '';
+    resetPwdTargetUser = null;
+  }
+  function confirmResetPwd(){
+    const newPwd = document.getElementById('inpNewPwd').value.trim();
+    if(!newPwd){
+      alert('请输入新密码');
+      return;
+    }
+    if(newPwd.length < 8 || newPwd.length > 20){
+      alert('密码长度需 8-20 位');
+      return;
+    }
+    // 实际项目此处应调用后端接口；原型仅做交互反馈
+    alert('已为账号「' + resetPwdTargetUser + '」重置密码');
+    closeResetPwdModal();
+  }
+
+  function toggleDeptDropdown(e){
+    e.stopPropagation();
+    const dd=document.getElementById('deptDropdown');
+    dd.style.display = dd.style.display==='none'?'':'none';
+  }
+  function updateDeptText(){
+    document.getElementById('deptPickerText').textContent = curDept ? deptPath(curDept) : '无（不参与隔离）';
+  }
+  function renderDeptDropdown(){
+    let html = `<div class="dept-opt ${curDept===null?'sel':''}" onclick="pickDept(null)">无（不参与隔离，可见全部）</div>`;
+    const opt = (n,lvl)=>{
+      html += `<div class="dept-opt ${lvl===1?'child':lvl>=2?'child2':''} ${curDept===n.id?'sel':''}" onclick="pickDept('${n.id}')">${n.name}</div>`;
+      (n.children||[]).forEach(c=>opt(c,lvl+1));
+    };
+    DEPTS.forEach(n=>opt(n,0));
+    document.getElementById('deptDropdown').innerHTML = html;
+  }
+  function pickDept(id){
+    curDept=id; updateDeptText(); renderDeptDropdown();
+    document.getElementById('deptDropdown').style.display='none';
   }
 
 
@@ -564,7 +970,7 @@
     {g:'基础数据', items:['讲师库']},
     {g:'规则中心', items:['策略列表','敏感词库','正则规则','AI语义模版']},
     {g:'公域直播质检', items:['主播帐号','直播报备','直播列表']},
-    {g:'系统设置', items:['帐号管理','角色权限','违规提醒','AI模型配置']},
+    {g:'系统设置', items:['帐号管理','角色权限','违规提醒','操作日志']},
   ];
 
   function allMenus(){ const o={}; MENU.forEach(g=>g.items.forEach(it=>o[it]=true)); return o; }
@@ -572,7 +978,7 @@
 
   let ROLES_DATA = [
     { key:'super', name:'超级管理员', preset:true, count:1,
-      desc:'商家总管理员，由平台开通。拥有全部操作权限与全部菜单，不可修改。',
+      desc:'商家总管理员，由平台开通。拥有全部菜单权限，不可修改。',
       ops:{edit:true,audit:true,stat:true}, menu:allMenus() },
     { key:'review', name:'审核员', preset:true, count:3,
       desc:'负责复核直播报备与直播违规。',
@@ -584,17 +990,11 @@
       menu:menus(['主播帐号','直播报备']) },
   ];
 
-  const OPS = [
-    {k:'edit', name:'编辑', desc:'新增/修改/配置：新建主播账号、新建报备、改策略、配敏感词、配置违规提醒、管账号与角色等'},
-    {k:'audit', name:'审核', desc:'审核直播报备、确认/误报直播违规'},
-    {k:'stat', name:'统计', desc:'数据导出：违规记录、报表导出'},
-  ];
-
   let curKey='review', expanded={};
   MENU.forEach(g=>expanded[g.g]=true);
 
-  function selectRole(k){ curKey=k; renderList(); renderDetail(); }
-  function renderList(){
+  function selectRole(k){ curKey=k; renderRoleList(); renderDetail(); }
+  function renderRoleList(){
     const tpl = r=>`<div class="role-item ${curKey===r.key?'active':''}" onclick="selectRole('${r.key}')">
       <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>
       ${r.name}
@@ -606,11 +1006,6 @@
   function renderDetail(){
     const r = ROLES_DATA.find(x=>x.key===curKey);
     const ro = r.preset && r.key==='super';
-    const opCards = OPS.map(o=>`
-      <div class="op-card ${r.ops[o.k]?'on':''}" onclick="${ro?'':`toggleOp('${o.k}')`}">
-        <div class="op-top"><span class="op-check"></span><span class="op-name">${o.name}</span></div>
-        <div class="op-desc">${o.desc}</div>
-      </div>`).join('');
 
     const tree = MENU.map(g=>{
       const states = g.items.map(it=>r.menu[it]);
@@ -643,18 +1038,12 @@
       </div>
       ${ro?'<div class="ro-banner">超级管理员为系统预置角色，拥有全部权限，不可修改。</div>':''}
       <div class="${ro?'detail-readonly':''}">
-        <div class="section-title">操作权限</div>
-        <div class="section-sub">决定该角色能做哪些动作。不勾任何项时，默认仅能「查询/查看」。可组合勾选。</div>
-        <div class="base-note">基础：任何角色都至少可以「查询/查看」其菜单内的数据。以下为在此之上叠加的操作能力。</div>
-        <div class="op-grid">${opCards}</div>
-
         <div class="section-title">菜单权限</div>
-        <div class="section-sub">勾选该角色可见的菜单。父级勾选 = 该分组下全部菜单。</div>
+        <div class="section-sub">勾选该角色可见的菜单。父级勾选 = 该分组下全部菜单；不勾选则该菜单对此角色不可见。</div>
         <div class="menu-tree">${tree}</div>
       </div>`;
   }
 
-  function toggleOp(k){ const r=ROLES_DATA.find(x=>x.key===curKey); r.ops[k]=!r.ops[k]; renderDetail(); }
   function toggleMenu(g,it){ const r=ROLES_DATA.find(x=>x.key===curKey); r.menu[it]=!r.menu[it]; renderDetail(); }
   function toggleGroup(g){
     const r=ROLES_DATA.find(x=>x.key===curKey);
@@ -665,8 +1054,6 @@
 
 
   // ================= 视图 3：违规提醒 =================
-  let wecomScopeMode='all', pickedAcc=['mosin 小红书','央视新闻'];
-
   function onMaster(){
     const on=document.getElementById('masterSwitch').checked;
     document.getElementById('masterLabel').textContent = on?'提醒已开启':'提醒已关闭';
@@ -675,38 +1062,19 @@
   function testHook(){ document.getElementById('testOk').style.display=''; }
   function toggleEvent(id,el){ document.getElementById(id).classList.toggle('on', el.checked); }
 
-  function setWecomScope(m){
-    wecomScopeMode=m;
-    document.getElementById('segAll').classList.toggle('active',m==='all');
-    document.getElementById('segSpec').classList.toggle('active',m==='spec');
-    document.getElementById('accPick').classList.toggle('show',m==='spec');
-  }
-  
-  function renderWecomAcc(){
-    document.getElementById('accGrid').innerHTML = STREAM_ACCOUNTS.map(a=>`
-      <div class="acc-item ${pickedAcc.includes(a.name)?'on':''}" onclick="toggleWecomAcc('${a.name}')">
-        <span class="acc-check"></span>${a.name}<span class="acc-plat">${a.plat}</span>
-      </div>`).join('');
-  }
-  
-  function toggleWecomAcc(name){
-    const i=pickedAcc.indexOf(name); if(i>=0)pickedAcc.splice(i,1); else pickedAcc.push(name);
-    renderWecomAcc();
-  }
-
   const CARDS = {
     high:{ color:'#e03131', title:'⚠ 直播实时违规告警', at:'@所有人',
-      lines:[ ['主播账号','mosin 小红书'],['平台','小红书'],['出镜讲师','mosin'],
+      lines:[ ['直播主题','6月金股策略直播'],['主播账号','mosin 小红书'],['平台','小红书'],['出镜讲师','mosin'],
               ['违规环节','直播中（实时）'],['违规等级','高危'],['违规类型','荐股 / 夸大收益'],
               ['命中内容','「这只票闭眼买，三个月翻倍」',true],['时间','2026-06-22 14:32'] ],
       link:'前往复核 · 查看实时直播' },
     mid:{ color:'#b9770f', title:'AI 审核不通过 · 待人工复核',
-      lines:[ ['主播账号','mosin视频号推送'],['平台','视频号'],['出镜讲师','mosin'],
+      lines:[ ['直播主题','可转债打新实操课'],['主播账号','mosin视频号推送'],['平台','视频号'],['出镜讲师','mosin'],
               ['违规环节','报备材料（开播前）'],['违规类型','账外引流'],
               ['命中内容','口播稿第 2 页命中引流话术',true],['时间','2026-06-22 11:08'] ],
       link:'前往复核 · 查看报备详情' },
     low:{ color:'#5f5e5a', title:'报备已驳回',
-      lines:[ ['主播账号','抖音号推送'],['平台','抖音'],['提交人','perry'],
+      lines:[ ['直播主题','新手开户答疑专场'],['主播账号','抖音号推送'],['平台','抖音'],['提交人','perry'],
               ['驳回原因','课件含未标注风险提示',true],['时间','2026-06-22 10:51'] ],
       link:'查看报备 · 通知提交人修改' },
   };
@@ -720,17 +1088,44 @@
       <div class="wc-title" style="color:${c.color}">${c.title}${c.at?` <span style="font-size:11px;color:#fff;background:${c.color};padding:1px 7px;border-radius:4px;">${c.at}</span>`:''}</div>
       <div class="wc-body">
         ${c.lines.map(l=>`<div class="wc-line"><span class="wc-key">${l[0]}</span><span class="wc-val ${l[2]?'hit':''}">${l[1]}</span></div>`).join('')}
-      </div>
-      <div class="wc-foot"><div class="wc-link">${c.link}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></div></div>`;
+      </div>`;
+  }
+
+  // ================= 视图 4：操作日志 =================
+  const LOGS = [
+    {time:'2026-06-23 14:32:10', acc:'xeadmin', name:'许楠', phone:'135****1771', module:'系统设置/违规提醒', type:'配置', ip:'116.24.67.65', detail:'修改告警事件：开启「直播中·实时质检违规」推送'},
+    {time:'2026-06-23 11:20:48', acc:'xeadmin', name:'许楠', phone:'135****1771', module:'系统设置/违规提醒', type:'配置', ip:'116.24.67.65', detail:'更新企业微信群机器人 Webhook 地址'},
+    {time:'2026-06-22 17:05:33', acc:'xeadmin', name:'许楠', phone:'135****1771', module:'系统设置/帐号管理', type:'修改', ip:'116.24.67.65', detail:'账号 systemreviewer 所属部门：由「视频号组」调整为「抖音组」'},
+    {time:'2026-06-22 16:40:02', acc:'xeadmin', name:'许楠', phone:'135****1771', module:'系统设置/角色权限', type:'修改', ip:'116.24.67.65', detail:'角色「审核员」菜单权限：新增可见「直播列表」'},
+  ];
+  function renderLog(){
+    const u=document.getElementById('logUser').value.trim();
+    const rows = LOGS.filter(l=> (!u || l.acc.includes(u) || l.name.includes(u)));
+    document.getElementById('logTbody').innerHTML = rows.length ? rows.map(l=>`
+      <tr>
+        <td><span class="scope-text">${l.time}</span></td>
+        <td>
+          <div class="log-acc-name">${l.acc}${l.name?`(${l.name})`:''}</div>
+          <div class="log-acc-phone">${l.phone} <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#b0b5bf" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></div>
+        </td>
+        <td><span class="log-module">${l.module}</span></td>
+        <td><span class="log-type-pill lt-${l.type}">${l.type}</span></td>
+        <td><span class="log-ip">${l.ip}</span></td>
+        <td><span class="log-detail">${l.detail}</span></td>
+      </tr>`).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--ink-3);padding:40px;">暂无符合条件的日志</td></tr>';
   }
 
   // ================= 初始化 =================
-  renderTable();         // 账号管理
-  renderList();          // 角色权限列表
-  renderDetail();        // 角色权限详情
-  renderWecomAcc();      // 企微账号选择器
-  setPreview('high');    // 企微卡片预览
-  switchView('account'); // 默认展示账号管理页
+  renderOrgTree();
+  renderTable();
+  document.addEventListener('click', function(e){
+    const dd=document.getElementById('deptDropdown'), pk=document.getElementById('deptPicker');
+    if(dd && pk && !pk.contains(e.target) && !dd.contains(e.target)) dd.style.display='none';
+  });
+  renderRoleList();
+  renderDetail();
+  setPreview('high');
+  switchView('account');
 </script>
 </body>
 </html>
